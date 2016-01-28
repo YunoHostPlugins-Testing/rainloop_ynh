@@ -6,11 +6,17 @@
         "fr": "Webmail leger"
     },
     "url": "http://rainloop.net/",
+    "license": "free",
     "maintainer": {
         "name": "scith, Djip007",
         "email": "none@domaine.org"
     },
     "multi_instance": "false",
+    "services": [
+        "nginx",
+	"php5-fpm",
+	"mysql"
+    ],
     "arguments": {
         "install" : [
             {
