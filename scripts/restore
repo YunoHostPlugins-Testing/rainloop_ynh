@@ -18,7 +18,7 @@
 
 # Check domain/path availability
 	sudo yunohost app checkurl "${domain}${path}" -a "$app" \
-	  || exit 1
+	  || ynh_die
 
 # Check destination directory
 	DESTDIR="/var/www/$app"
