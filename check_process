@@ -15,7 +15,7 @@
         setup_private=1
         setup_public=1
         upgrade=1
-		upgrade=1	from_commit=80cce268248d4d34b2ad1671ee31d3403f9262c6
+        upgrade=1	from_commit=e26b7e5823858ea5f526659f320692a2768786b5
         backup_restore=1
         multi_instance=1
         incorrect_path=1
@@ -38,6 +38,6 @@
 Email=
 Notification=none
 ;;; Upgrade options
-	; commit=80cce268248d4d34b2ad1671ee31d3403f9262c6
-		name=Fix root install
+	; commit=e26b7e5823858ea5f526659f320692a2768786b5
+		name=Define ereg() if it does not exists 
 		manifest_arg=domain=DOMAIN&path=PATH&is_public=Yes&password=password&ldap=Yes&lang=English&
