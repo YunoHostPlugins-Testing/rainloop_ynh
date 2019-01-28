@@ -1,6 +1,6 @@
 # Rainloop for YunoHost 
  
-* [rainloop](http://rainloop.net/ ): 1.10.5.192
+* [rainloop](http://rainloop.net/ ): 1.11.3
  
 ## English
 Rainloop is a lightweight webmail. 
@@ -31,7 +31,7 @@ Pour le configurer après l'installation, veuillez vous rendre sur http://DOMAIN
 - Le mot de passe admin par défaut est : Mot de passe choisi lors de l'installation 
 - Si vous avez oublié votre mot de passe, vous pouvez le retrouver avec ``sudo yunohost app settings rainloop password``
  
-Chaque utilisateur peut ajouter un carnet d'adresse distant CardDav via leur propre paramètres.
+Chaque utilisateur peut ajouter un carnet d'adresse distant CardDav via leurs propres paramètres.
  
 - Si vous utilisez Baikal, l'adresse à renseigner est du type : https://DOMAIN.TLD/baikal/card.php/addressbooks/UTILISATEUR/default/ 
 - Si vous utilisez NextCloud, l'adresse à renseigner est du type : https://DOMAIN.TLD/nextcloud/remote.php/carddav/addressbooks/USER/contacts
