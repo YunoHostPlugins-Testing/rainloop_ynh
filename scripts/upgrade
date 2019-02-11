@@ -12,6 +12,7 @@ source /usr/share/yunohost/helpers
 #=================================================
 # LOAD SETTINGS
 #=================================================
+ynh_print_info "Load settings"
 
 app=$YNH_APP_INSTANCE_NAME
 
@@ -19,6 +20,7 @@ domain=$(ynh_app_setting_get $app domain)
 path_url=$(ynh_app_setting_get $app path)
 is_public=$(ynh_app_setting_get $app is_public)
 final_path=$(ynh_app_setting_get $app final_path)
+language=$(ynh_app_setting_get $app language)
 db_name=$(ynh_app_setting_get $app db_name)
 
 lang=$(ynh_app_setting_get $app lang)
@@ -33,6 +35,7 @@ fi
 #=================================================
 # ENSURE DOWNWARD COMPATIBILITY
 #=================================================
+ynh_print_info "Ensure downward compatibility"
 
 # Fix is_public as a boolean value
 if [ "$is_public" = "Yes" ]; then
@@ -58,6 +61,7 @@ fi
 #=================================================
 # BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
 #=================================================
+ynh_print_info "Backup the app before upgrading"
 
 # Backup the current version of the app
 ynh_backup_before_upgrade
@@ -80,6 +84,7 @@ path_url=$(ynh_normalize_url_path $path_url)
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
+ynh_print_info "Download, check and unpack source"
 
 # Download, check integrity, uncompress and patch the source from app.src
 ynh_setup_source "$final_path"
@@ -87,6 +92,7 @@ ynh_setup_source "$final_path"
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
+ynh_print_info "Reconfigure nginx"
 
 # Create a dedicated nginx config
 ynh_add_nginx_config
@@ -94,13 +100,15 @@ ynh_add_nginx_config
 #=================================================
 # CREATE DEDICATED USER
 #=================================================
+ynh_print_info "Create a dedicated user"
 
-# Create a system user
+# Create a dedicated user (if not existing)
 ynh_system_user_create $app
 
 #=================================================
 # PHP-FPM CONFIGURATION
 #=================================================
+ynh_print_info "Reconfigure php-fpm"
 
 # Create a dedicated php-fpm config
 ynh_add_fpm_config
@@ -131,22 +139,32 @@ cp -rf ../sources/pgpback "$final_path/"
 # SECURE FILES AND DIRECTORIES
 #=================================================
 
+# Set permissions on app files
+chown -R $app: $final_path
 find $final_path/. -type d -exec chmod 755 {} \;
 find $final_path/. -type f -exec chmod 644 {} \;
-chown -R $app: $final_path
 
 #=================================================
 # SETUP SSOWAT
 #=================================================
+ynh_print_info "Reconfigure SSOwat"
 
 # Make app public if necessary
 if [ $is_public -eq 1 ]
 then
-	ynh_app_setting_set $app skipped_uris "/"
+	# unprotected_uris allows SSO credentials to be passed anyway
+	ynh_app_setting_set $app unprotected_uris "/"
 fi
 
 #=================================================
 # RELOAD NGINX
 #=================================================
+ynh_print_info "Reload nginx"
 
 systemctl reload nginx
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_print_info "Upgrade completed"
