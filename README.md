@@ -19,11 +19,7 @@ Rainloop is a lightweight webmail.
 
 ## Screenshots
 
-![](Link to an screenshot for this app)
-
-## Demo
-
-* [Official demo](Link to a demo site for this app)
+![](http://www.rainloop.net/static/media/screenshots/v2/12.png)
 
 ## Configuration
   

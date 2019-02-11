@@ -15,11 +15,7 @@ Rainloop est un webmail simple et léger.
 
 ## Captures d'écran
 
-![](Lien vers une capture d'écran pour cette application)
-
-## Démo
-
-* [Démo officielle](Lien vers un site de démonstration pour cette application)
+![](http://www.rainloop.net/static/media/screenshots/v2/12.png)
 
 ## Configuration
 
