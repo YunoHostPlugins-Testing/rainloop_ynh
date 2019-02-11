@@ -53,9 +53,9 @@ L'application peut-elle être utilisée par plusieurs utilisateurs?
 
 #### Supported architectures
 
-* x86-64b - [![Build Status](https://ci-apps.yunohost.org/ci/logs/rainloop%20%28Community%29.svg)](https://ci-apps.yunohost.org/ci/apps/rainloop/)
-* ARMv8-A - [![Build Status](https://ci-apps-arm.yunohost.org/ci/logs/rainloop%20%28Community%29.svg)](https://ci-apps-arm.yunohost.org/ci/apps/rainloop/)
-* Jessie x86-64b - [![Build Status](https://ci-stretch.nohost.me/ci/logs/rainloop%20%28Community%29.svg)](https://ci-stretch.nohost.me/ci/apps/rainloop/)
+* x86-64b - [![Build Status](https://ci-apps.yunohost.org/ci/logs/rainloop%20%28Official%29.svg)](https://ci-apps.yunohost.org/ci/apps/rainloop/)
+* ARMv8-A - [![Build Status](https://ci-apps-arm.yunohost.org/ci/logs/rainloop%20%28Official%29.svg)](https://ci-apps-arm.yunohost.org/ci/apps/rainloop/)
+* Jessie x86-64b - [![Build Status](https://ci-stretch.nohost.me/ci/logs/rainloop%20%28Official%29.svg)](https://ci-stretch.nohost.me/ci/apps/rainloop/)
 
 ## Links
 
