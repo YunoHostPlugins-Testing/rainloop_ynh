@@ -21,6 +21,10 @@ Rainloop est un webmail simple et léger.
 
 ![](http://www.rainloop.net/static/media/screenshots/v2/12.png)
 
+## Démo
+
+* [Démo officielle](https://mail.rainloop.net/)
+
 ## Configuration
 
 Pour le configurer après l'installation, veuillez vous rendre sur http://DOMAIN.TLD/rainloop/app/?admin 
