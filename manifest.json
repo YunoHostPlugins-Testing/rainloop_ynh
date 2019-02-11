@@ -52,14 +52,14 @@
 				"default": false
 			},
 			{
-				"name": "lang",
+                "name": "language",
                 "type": "string",
 				"ask": {
                     "en": "Choose the application language",
                     "fr": "Choisissez la langue de l'application"
                 },
-				"choices": ["English", "Francais"],
-				"default": "English"
+                "choices": ["fr", "en"],
+                "default": "fr"
 			},
             {
                 "name": "password",
