@@ -21,6 +21,9 @@ Rainloop saves your PGP private keys in the browser storage. This means that you
 To upgrade the app once a new rainloop version is available, simply run in a local shell via ssh or otherwise :
 ``sudo yunohost app upgrade -u https://github.com/YunoHost-Apps/rainloop_ynh rainloop``
 
+## License
+
+**LICENSE:** AGPL-3.0-or-later
  
 ## Français 
 Rainloop est un webmail simple et léger. 

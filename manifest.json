@@ -8,7 +8,7 @@
 	},
 	"version": "1.12.1~ynh1",
 	"url": "https://www.rainloop.net/",
-	"license": "AGPL-3.0",
+	"license": "AGPL-3.0-or-later",
 	"maintainer": {
 		"name": "scith, Djip007, polytan02"
 	},
