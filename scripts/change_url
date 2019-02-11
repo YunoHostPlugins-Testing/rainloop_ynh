@@ -97,6 +97,10 @@ fi
 # ...
 #=================================================
 
+application_file="$final_path/app/data/_data_/_default_/configs/application.ini"
+ynh_replace_string "default_domain = .^" "default_domain = \"$new_domain\"" "$application_file"
+ynh_replace_string "$old_domain$old_path" "$new_domain$new_path" "$final_path/index.php"
+
 #=================================================
 # GENERIC FINALISATION
 #=================================================
