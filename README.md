@@ -1,6 +1,6 @@
 # Rainloop for YunoHost 
  
-* [rainloop](http://rainloop.net/ ): 1.11.3
+* [rainloop](http://rainloop.net/ ): 1.12.1
  
 ## English
 Rainloop is a lightweight webmail. 
