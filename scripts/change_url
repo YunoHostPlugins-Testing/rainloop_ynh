@@ -94,7 +94,7 @@ fi
 #=================================================
 # SPECIFIC MODIFICATIONS
 #=================================================
-# ...
+# CONFIGURE
 #=================================================
 
 application_file="$final_path/app/data/_data_/_default_/configs/application.ini"
