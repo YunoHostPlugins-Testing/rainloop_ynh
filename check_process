@@ -7,7 +7,7 @@
 	; Manifest
         domain="domain.tld"    (DOMAIN)
         path="/rainloop"    (PATH)
-        language="fr"
+        lang="fr"
         is_public=1 (PUBLIC|public=1|private=0)
 		password="pass"
         ldap=1

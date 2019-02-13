@@ -20,17 +20,8 @@ domain=$(ynh_app_setting_get $app domain)
 path_url=$(ynh_app_setting_get $app path)
 is_public=$(ynh_app_setting_get $app is_public)
 final_path=$(ynh_app_setting_get $app final_path)
-language=$(ynh_app_setting_get $app language)
-db_name=$(ynh_app_setting_get $app db_name)
-
 lang=$(ynh_app_setting_get $app lang)
-
-if [ -n "$lang" ]
-then
-    language="$lang"
-    ynh_app_setting_set "$app" language "$language"
-	ynh_app_setting_delete "$app" lang
-fi
+db_name=$(ynh_app_setting_get $app db_name)
 
 #=================================================
 # ENSURE DOWNWARD COMPATIBILITY

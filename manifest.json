@@ -52,7 +52,7 @@
 				"default": false
 			},
 			{
-                "name": "language",
+                "name": "lang",
                 "type": "string",
 				"ask": {
                     "en": "Choose the application language",

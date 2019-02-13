@@ -28,7 +28,7 @@ ynh_print_info "Retrieve arguments from the manifest ..."
 domain=$YNH_APP_ARG_DOMAIN
 path_url=$YNH_APP_ARG_PATH
 is_public=$YNH_APP_ARG_IS_PUBLIC
-language=$YNH_APP_ARG_LANGUAGE
+lang=$YNH_APP_ARG_LANG
 password=$YNH_APP_ARG_PASSWORD
 ldap=$YNH_APP_ARG_LDAP
 
@@ -68,7 +68,7 @@ ynh_print_info "Store settings from manifest ..."
 ynh_app_setting_set $app domain $domain
 ynh_app_setting_set $app path $path_url
 ynh_app_setting_set $app is_public $is_public
-ynh_app_setting_set $app language $language
+ynh_app_setting_set $app lang $lang
 ynh_app_setting_set $app password $password #9999 Check if it's need to save password
 ynh_app_setting_set $app ldap $ldap
 
@@ -166,7 +166,7 @@ sudo cp ../conf/data/configs/application.ini "$application_file"
 ynh_replace_string "domain.tld" "$domain" "$application_file"
 ynh_replace_string "MYSQLUSER" "$db_name" "$application_file"
 ynh_replace_string "MYSQLPASSWORD" "$db_pwd" "$application_file"
-ynh_replace_string "LANGTOCHANGE" "$language" "$application_file"
+ynh_replace_string "LANGTOCHANGE" "$lang" "$application_file"
 ynh_replace_string "PLUGINSTOENABLE" "$plugins" "$application_file"
 
 
