@@ -39,8 +39,6 @@ test ! -e "$final_path" || ynh_die "This path already contains a folder"
 # Normalize the url path syntax
 path_url=$(ynh_normalize_url_path $path_url)
 
-# Check web path availability
-ynh_webpath_available $domain $path_url
 # Register (book) web path
 ynh_webpath_register $app $domain $path_url
 
@@ -76,7 +74,6 @@ ynh_setup_source "$final_path/app"
 # NGINX CONFIGURATION
 #=================================================
 
-ynh_replace_string "__PATH__/" "${path_url%/}/" "../conf/nginx.conf"
 # Create a dedicated nginx config
 ynh_add_nginx_config
 
@@ -111,31 +108,32 @@ case "$lang" in
 	*)
 		lang="en"
 esac
-ynh_app_setting_set "$app" lang "$lang"
+ynh_app_setting_set $app lang $lang
 
 # Set plugins
-plugins="ynh-login-mapping,auto-domain-grab"		# This plugin is trying to automatically grab unknown domains if users want to add external email accounts
+# This plugin is trying to automatically grab unknown domains if users want to add external email accounts
+plugins="ynh-login-mapping,auto-domain-grab"
 if [ $ldap -eq 1 ]
 then
-	plugins="$plugins,ynh-ldap-suggestions"		# This plugin is to suggest YunoHost users in recipients list
+	# This plugin is to suggest YunoHost users in recipients list
+	plugins="$plugins,ynh-ldap-suggestions"
 fi
-ynh_app_setting_set "$app" plugins "$plugins"
+ynh_app_setting_set $app plugins "$plugins"
 
 
 mkdir -p "$final_path/app/data/_data_/_default_/configs/"
 application_file="$final_path/app/data/_data_/_default_/configs/application.ini"
 
-sudo cp ../conf/data/configs/application.ini "$application_file"
-ynh_replace_string "domain.tld" "$domain" "$application_file"
-ynh_replace_string "MYSQLUSER" "$db_name" "$application_file"
-ynh_replace_string "MYSQLPASSWORD" "$db_pwd" "$application_file"
-ynh_replace_string "LANGTOCHANGE" "$lang" "$application_file"
-ynh_replace_string "PLUGINSTOENABLE" "$plugins" "$application_file"
+cp ../conf/data/configs/application.ini "$application_file"
+ynh_replace_string "__DOMAIN__" $domain "$application_file"
+ynh_replace_string "__MYSQLUSER__" $db_name "$application_file"
+ynh_replace_string "__MYSQLPASSWORD__" "$db_pwd" "$application_file"
+ynh_replace_string "__LANGTOCHANGE__" $lang "$application_file"
+ynh_replace_string "__PLUGINSTOENABLE__" "$plugins" "$application_file"
 
 
 # Set admin password
 php ../conf/config.php --index="$final_path/app/index.php" --password="$password"
-
 
 # Add default domain configs by looping through all the domains already added
 mkdir -p "$final_path/app/data/_data_/_default_/domains/"
@@ -150,12 +148,12 @@ cp ../conf/data/domains/default.ini "$final_path/app/data/_data_/_default_/domai
 
 # install SSO - at the moment the index is the SSO and rainloop is installed in /app
 cp ../sources/sso/sso.php "$final_path/index.php"
-ynh_replace_string "domain.tld" "$domain" "$final_path/index.php"
-ynh_replace_string "ALIASTOCHANGE" "$final_path" "$final_path/index.php"
+ynh_replace_string "__DOMAIN__" "$domain" "$final_path/index.php"
+ynh_replace_string "__ALIASTOCHANGE__" "$final_path" "$final_path/index.php"
 if [ $path_url = "/" ]; then
-	ynh_replace_string "ROOTTOCHANGE" "" "$final_path/index.php"
+	ynh_replace_string "__ROOTTOCHANGE__" "" "$final_path/index.php"
 else
-	ynh_replace_string "ROOTTOCHANGE" "$path_url" "$final_path/index.php"
+	ynh_replace_string "__ROOTTOCHANGE__" "$path_url" "$final_path/index.php"
 fi
 
 

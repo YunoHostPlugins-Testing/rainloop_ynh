@@ -1,5 +1,4 @@
 ;; Test Rainloop
-    auto_remove=1
     ; Manifest
         domain="domain.tld"    (DOMAIN)
         path="/rainloop"    (PATH)

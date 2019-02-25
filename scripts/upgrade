@@ -86,7 +86,7 @@ ynh_add_nginx_config
 # CREATE DEDICATED USER
 #=================================================
 
-# Create a system user
+# Create a dedicated user (if not existing)
 ynh_system_user_create $app
 
 #=================================================
@@ -104,12 +104,12 @@ ynh_add_fpm_config
 
 # update SSO
 cp ../sources/sso/sso.php "$final_path/index.php"
-ynh_replace_string "domain.tld" "$domain" "$final_path/index.php"
-ynh_replace_string "ALIASTOCHANGE" "$final_path" "$final_path/index.php"
+ynh_replace_string "__DOMAIN__" "$domain" "$final_path/index.php"
+ynh_replace_string "__ALIASTOCHANGE__" "$final_path" "$final_path/index.php"
 if [ $path_url = "/" ]; then
-	ynh_replace_string "ROOTTOCHANGE" "" "$final_path/index.php"
+	ynh_replace_string "__ROOTTOCHANGE__" "" "$final_path/index.php"
 else
-	ynh_replace_string "ROOTTOCHANGE" "$path_url" "$final_path/index.php"
+	ynh_replace_string "__ROOTTOCHANGE__" "$path_url" "$final_path/index.php"
 fi
 
 
