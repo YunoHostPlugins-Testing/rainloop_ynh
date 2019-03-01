@@ -13,10 +13,6 @@ Rainloop is a lightweight webmail.
 
 **Shipped version:** 1.12.1
 
-## License
-
-**LICENSE:** AGPL-3.0-or-later
-
 ## Screenshots
 
 ![](http://www.rainloop.net/static/media/screenshots/v2/12.png)
