@@ -121,7 +121,6 @@ else
 	ynh_replace_string "__ROOTTOCHANGE__" "$path_url" "$final_path/index.php"
 fi
 
-
 # Install PGPback by chtixof to allow users to backup/restore their PGP private keys on the server
 cp -rf ../sources/pgpback "$final_path/"
 
