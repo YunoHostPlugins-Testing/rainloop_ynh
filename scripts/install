@@ -19,19 +19,21 @@ ynh_abort_if_errors
 #=================================================
 # RETRIEVE ARGUMENTS FROM THE MANIFEST
 #=================================================
+ynh_print_info "Retrieve arguments from the manifest ..."
 
 domain=$YNH_APP_ARG_DOMAIN
 path_url=$YNH_APP_ARG_PATH
 is_public=$YNH_APP_ARG_IS_PUBLIC
+lang=$YNH_APP_ARG_LANG
 password=$YNH_APP_ARG_PASSWORD
 ldap=$YNH_APP_ARG_LDAP
-lang=$YNH_APP_ARG_LANG
 
 app=$YNH_APP_INSTANCE_NAME
 
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
 #=================================================
+ynh_print_info "Validating installation parameters..."
 
 final_path=/var/www/$app
 test ! -e "$final_path" || ynh_die "This path already contains a folder"
@@ -39,19 +41,19 @@ test ! -e "$final_path" || ynh_die "This path already contains a folder"
 # Normalize the url path syntax
 path_url=$(ynh_normalize_url_path $path_url)
 
-# Check web path availability
-ynh_webpath_available $domain $path_url
 # Register (book) web path
 ynh_webpath_register $app $domain $path_url
 
 #=================================================
 # STORE SETTINGS FROM MANIFEST
 #=================================================
+ynh_print_info "Storing installation settings..."
 
 ynh_app_setting_set $app domain $domain
 ynh_app_setting_set $app path $path_url
 ynh_app_setting_set $app is_public $is_public
-ynh_app_setting_set $app password $password
+ynh_app_setting_set $app lang $lang
+ynh_app_setting_set $app password $password #9999 Check if it's need to save password
 ynh_app_setting_set $app ldap $ldap
 
 #=================================================
@@ -59,6 +61,7 @@ ynh_app_setting_set $app ldap $ldap
 #=================================================
 # CREATE A MYSQL DATABASE
 #=================================================
+ynh_print_info "Creating a mysql database ..."
 
 db_name=$(ynh_sanitize_dbid $app)
 ynh_app_setting_set $app db_name $db_name
@@ -67,6 +70,7 @@ ynh_mysql_setup_db $db_name $db_name
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
+ynh_print_info "Setting up source files ..."
 
 ynh_app_setting_set $app final_path $final_path
 # Download, check integrity, uncompress and patch the source from app.src
@@ -75,14 +79,15 @@ ynh_setup_source "$final_path/app"
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
+ynh_print_info "Configuring nginx web server..."
 
-ynh_replace_string "__PATH__/" "${path_url%/}/" "../conf/nginx.conf"
 # Create a dedicated nginx config
 ynh_add_nginx_config
 
 #=================================================
 # CREATE DEDICATED USER
 #=================================================
+ynh_print_info "Configuring system user ..."
 
 # Create a system user
 ynh_system_user_create $app
@@ -90,6 +95,7 @@ ynh_system_user_create $app
 #=================================================
 # PHP-FPM CONFIGURATION
 #=================================================
+ynh_print_info "Configuring php-fpm ..."
 
 # Create a dedicated php-fpm config
 ynh_add_fpm_config
@@ -100,18 +106,7 @@ ynh_add_fpm_config
 # AUTOCONFIG
 #=================================================
 
-# Set lang => define from install manifest
-case "$lang" in
-	Francais)
-		lang="fr"
-		;;
-	English)
-		lang="en"
-		;;
-	*)
-		lang="en"
-esac
-ynh_app_setting_set "$app" lang "$lang"
+
 
 # Set plugins
 plugins="ynh-login-mapping,auto-domain-grab"		# This plugin is trying to automatically grab unknown domains if users want to add external email accounts
@@ -163,11 +158,19 @@ fi
 cp -rf ../sources/pgpback "$final_path/"
 
 #=================================================
+# STORE THE CONFIG FILE CHECKSUM
+#=================================================
+
+# Calculate and store the config file checksum into the app settings
+ynh_store_file_checksum "$application_file"
+
+#=================================================
 # GENERIC FINALIZATION
 #=================================================
 # SECURE FILES AND DIRECTORIES
 #=================================================
 
+# Set permissions to app files
 find $final_path/. -type d -exec chmod 755 {} \;
 find $final_path/. -type f -exec chmod 644 {} \;
 chown -R $app: $final_path
@@ -175,15 +178,24 @@ chown -R $app: $final_path
 #=================================================
 # SETUP SSOWAT
 #=================================================
+ynh_print_info "Configuring SSOwat ..."
 
 # Make app public if necessary
 if [ $is_public -eq 1 ]
 then
-	ynh_app_setting_set $app skipped_uris "/"
+	# unprotected_uris allows SSO credentials to be passed anyway.
+	ynh_app_setting_set $app unprotected_uris "/"
 fi
 
 #=================================================
 # RELOAD NGINX
 #=================================================
+ynh_print_info "Reloading nginx web server..."
 
 systemctl reload nginx
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_print_info "Installation of $app completed"
