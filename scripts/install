@@ -19,13 +19,14 @@ ynh_abort_if_errors
 #=================================================
 # RETRIEVE ARGUMENTS FROM THE MANIFEST
 #=================================================
+ynh_print_info "Retrieve arguments from the manifest ..."
 
 domain=$YNH_APP_ARG_DOMAIN
 path_url=$YNH_APP_ARG_PATH
 is_public=$YNH_APP_ARG_IS_PUBLIC
+lang=$YNH_APP_ARG_LANG
 password=$YNH_APP_ARG_PASSWORD
 ldap=$YNH_APP_ARG_LDAP
-lang=$YNH_APP_ARG_LANG
 
 app=$YNH_APP_INSTANCE_NAME
 
@@ -51,7 +52,8 @@ ynh_print_info "Storing installation settings..."
 ynh_app_setting_set $app domain $domain
 ynh_app_setting_set $app path $path_url
 ynh_app_setting_set $app is_public $is_public
-ynh_app_setting_set $app password $password
+ynh_app_setting_set $app lang $lang
+ynh_app_setting_set $app password $password #9999 Check if it's need to save password
 ynh_app_setting_set $app ldap $ldap
 
 #=================================================
@@ -169,11 +171,19 @@ fi
 cp -rf ../sources/pgpback "$final_path/"
 
 #=================================================
+# STORE THE CONFIG FILE CHECKSUM
+#=================================================
+
+# Calculate and store the config file checksum into the app settings
+ynh_store_file_checksum "$application_file"
+
+#=================================================
 # GENERIC FINALIZATION
 #=================================================
 # SECURE FILES AND DIRECTORIES
 #=================================================
 
+# Set permissions to app files
 find $final_path/. -type d -exec chmod 755 {} \;
 find $final_path/. -type f -exec chmod 644 {} \;
 chown -R $app: $final_path
@@ -186,7 +196,8 @@ ynh_print_info "Configuring SSOwat..."
 # Make app public if necessary
 if [ $is_public -eq 1 ]
 then
-	ynh_app_setting_set $app skipped_uris "/"
+	# unprotected_uris allows SSO credentials to be passed anyway.
+	ynh_app_setting_set $app unprotected_uris "/"
 fi
 
 #=================================================

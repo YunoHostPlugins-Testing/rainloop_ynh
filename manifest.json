@@ -6,9 +6,9 @@
 		"en": "Lightweight multi-account webmail",
 		"fr": "Webmail léger multi-comptes"
 	},
-	"version": "1.11.1~ynh2",
+	"version": "1.12.1~ynh2",
 	"url": "https://www.rainloop.net/",
-	"license": "AGPL-3.0",
+	"license": "AGPL-3.0-or-later",
 	"maintainer": {
 		"name": "scith, Djip007, polytan02"
 	},
@@ -27,10 +27,10 @@
 				"name": "domain",
 				"type": "domain",
 				"ask": {
-					"en": "Choose a domain for Rainloop",
-					"fr": "Choisissez un domaine pour Rainloop"
+					"en": "Choose a domain name for Rainloop",
+					"fr": "Choisissez un nom de domaine pour Rainloop"
 				},
-				"example": "domain.org"
+                "example": "example.com"
 			},
 			{
 				"name": "path",
@@ -51,14 +51,19 @@
 				},
 				"default": false
 			},
-			{
-				"name": "password",
-				"type": "password",
-				"ask": {
-					"en": "Choose a strong password for the 'admin' user",
-					"fr": "Choisissez un mot de passe fort pour l'administrateur, 'admin'"
-				}
-			},
+            {
+                "name": "password",
+                "type": "password",
+                "ask": {
+                    "en": "Set the administrator password",
+                    "fr": "Définissez le mot de passe administrateur"
+                },
+                "help": {
+                    "en": "Use the help field to add an information for the admin about this question.",
+                    "fr": "Utilisez le champ aide pour ajouter une information à l'intention de l'administrateur à propos de cette question."
+                },
+                "example": "Choose a password"
+            },
 			{
 				"name": "ldap",
 				"type": "boolean",
