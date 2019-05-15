@@ -54,6 +54,15 @@ ynh_print_info "Restoring the app main directory..."
 ynh_restore_file "$final_path"
 
 #=================================================
+# RESTORE THE MYSQL DATABASE
+#=================================================
+ynh_print_info "Restoring the MySQL database..."
+
+db_pwd=$(ynh_app_setting_get $app mysqlpwd)
+ynh_mysql_setup_db $db_name $db_name $db_pwd
+ynh_mysql_connect_as $db_name $db_pwd $db_name < ./db.sql
+
+#=================================================
 # RECREATE THE DEDICATED USER
 #=================================================
 ynh_print_info "Recreating the dedicated system user..."
@@ -73,15 +82,6 @@ chown -R $app: $final_path
 #=================================================
 
 ynh_restore_file "/etc/php/7.0/fpm/pool.d/$app.conf"
-
-#=================================================
-# RESTORE THE MYSQL DATABASE
-#=================================================
-ynh_print_info "Restoring the MySQL database..."
-
-db_pwd=$(ynh_app_setting_get $app mysqlpwd)
-ynh_mysql_setup_db $db_name $db_name $db_pwd
-ynh_mysql_connect_as $db_name $db_pwd $db_name < ./db.sql
 
 #=================================================
 # GENERIC FINALIZATION

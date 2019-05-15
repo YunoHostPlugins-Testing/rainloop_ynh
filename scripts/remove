@@ -59,6 +59,7 @@ ynh_remove_fpm_config
 #=================================================
 # REMOVE GPG KEY
 #=================================================
+ynh_print_info "Removing GPG key"
 
 gpg --batch --delete-key --yes Rainloop
 

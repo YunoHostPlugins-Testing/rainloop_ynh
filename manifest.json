@@ -6,19 +6,19 @@
 		"en": "Lightweight multi-account webmail",
 		"fr": "Webmail léger multi-comptes"
 	},
-	"version": "1.12.1~ynh1",
+	"version": "1.12.1~ynh2",
 	"url": "https://www.rainloop.net/",
 	"license": "AGPL-3.0-or-later",
 	"maintainer": {
 		"name": "scith, Djip007, polytan02"
 	},
 	"requirements": {
-        "yunohost": ">= 3.4"
+		"yunohost": ">= 3.2.0"
 	},
 	"multi_instance": true,
 	"services": [
 		"nginx",
-        "php7.0-fpm",
+		"php7.0-fpm",
 		"mysql"
 	],
 	"arguments": {
@@ -52,28 +52,18 @@
 				"default": false
 			},
 			{
-                "name": "lang",
-                "type": "string",
+				"name": "password",
+				"type": "password",
 				"ask": {
-                    "en": "Choose the application language",
-                    "fr": "Choisissez la langue de l'application"
-                },
-                "choices": ["fr", "en"],
-                "default": "fr"
+					"en": "Set the administrator password",
+					"fr": "Définissez le mot de passe administrateur"
+				},
+				"help": {
+					"en": "Use the help field to add an information for the admin about this question.",
+					"fr": "Utilisez le champ aide pour ajouter une information à l'intention de l'administrateur à propos de cette question."
+				},
+				"example": "Choose a password"
 			},
-            {
-                "name": "password",
-                "type": "password",
-                "ask": {
-                    "en": "Set the administrator password",
-                    "fr": "Définissez le mot de passe administrateur"
-                },
-                "help": {
-                    "en": "Use the help field to add an information for the admin about this question.",
-                    "fr": "Utilisez le champ aide pour ajouter une information à l'intention de l'administrateur à propos de cette question."
-                },
-                "example": "Choose a password"
-            },
 			{
 				"name": "ldap",
 				"type": "boolean",
@@ -82,6 +72,16 @@
 					"fr": "Souhaitez-vous ajouter les utilisateurs YunoHost dans les suggestions de destinataires ?"
 				},
 				"default": true
+			},
+			{
+				"name": "lang",
+				"type": "string",
+				"ask": {
+					"en": "Select default language",
+					"fr": "Definir la langue par defaut"
+				},
+				"choices": ["English", "Francais"],
+				"default": "English"
 			}
 		]
 	}

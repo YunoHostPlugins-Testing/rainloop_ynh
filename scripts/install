@@ -61,7 +61,7 @@ ynh_app_setting_set $app ldap $ldap
 #=================================================
 # CREATE A MYSQL DATABASE
 #=================================================
-ynh_print_info "Creating a mysql database ..."
+ynh_print_info "Creating a MySQL database..."
 
 db_name=$(ynh_sanitize_dbid $app)
 ynh_app_setting_set $app db_name $db_name
@@ -70,7 +70,7 @@ ynh_mysql_setup_db $db_name $db_name
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
-ynh_print_info "Setting up source files ..."
+ynh_print_info "Setting up source files..."
 
 ynh_app_setting_set $app final_path $final_path
 # Download, check integrity, uncompress and patch the source from app.src
@@ -87,7 +87,7 @@ ynh_add_nginx_config
 #=================================================
 # CREATE DEDICATED USER
 #=================================================
-ynh_print_info "Configuring system user ..."
+ynh_print_info "Configuring system user..."
 
 # Create a system user
 ynh_system_user_create $app
@@ -95,7 +95,7 @@ ynh_system_user_create $app
 #=================================================
 # PHP-FPM CONFIGURATION
 #=================================================
-ynh_print_info "Configuring php-fpm ..."
+ynh_print_info "Configuring php-fpm..."
 
 # Create a dedicated php-fpm config
 ynh_add_fpm_config
@@ -105,32 +105,45 @@ ynh_add_fpm_config
 #=================================================
 # AUTOCONFIG
 #=================================================
+ynh_print_info "Configuring rainloop..."
 
-
+# Set lang => define from install manifest
+case "$lang" in
+	Francais)
+		lang="fr"
+		;;
+	English)
+		lang="en"
+		;;
+	*)
+		lang="en"
+esac
+ynh_app_setting_set $app lang $lang
 
 # Set plugins
-plugins="ynh-login-mapping,auto-domain-grab"		# This plugin is trying to automatically grab unknown domains if users want to add external email accounts
+# This plugin is trying to automatically grab unknown domains if users want to add external email accounts
+plugins="ynh-login-mapping,auto-domain-grab"
 if [ $ldap -eq 1 ]
 then
-	plugins="$plugins,ynh-ldap-suggestions"		# This plugin is to suggest YunoHost users in recipients list
+	# This plugin is to suggest YunoHost users in recipients list
+	plugins="$plugins,ynh-ldap-suggestions"
 fi
-ynh_app_setting_set "$app" plugins "$plugins"
+ynh_app_setting_set $app plugins "$plugins"
 
 
 mkdir -p "$final_path/app/data/_data_/_default_/configs/"
 application_file="$final_path/app/data/_data_/_default_/configs/application.ini"
 
-sudo cp ../conf/data/configs/application.ini "$application_file"
-ynh_replace_string "domain.tld" "$domain" "$application_file"
-ynh_replace_string "MYSQLUSER" "$db_name" "$application_file"
-ynh_replace_string "MYSQLPASSWORD" "$db_pwd" "$application_file"
-ynh_replace_string "LANGTOCHANGE" "$lang" "$application_file"
-ynh_replace_string "PLUGINSTOENABLE" "$plugins" "$application_file"
+cp ../conf/data/configs/application.ini "$application_file"
+ynh_replace_string "__DOMAIN__" $domain "$application_file"
+ynh_replace_string "__MYSQLUSER__" $db_name "$application_file"
+ynh_replace_string "__MYSQLPASSWORD__" "$db_pwd" "$application_file"
+ynh_replace_string "__LANGTOCHANGE__" $lang "$application_file"
+ynh_replace_string "__PLUGINSTOENABLE__" "$plugins" "$application_file"
 
 
 # Set admin password
 php ../conf/config.php --index="$final_path/app/index.php" --password="$password"
-
 
 # Add default domain configs by looping through all the domains already added
 mkdir -p "$final_path/app/data/_data_/_default_/domains/"
@@ -145,14 +158,13 @@ cp ../conf/data/domains/default.ini "$final_path/app/data/_data_/_default_/domai
 
 # install SSO - at the moment the index is the SSO and rainloop is installed in /app
 cp ../sources/sso/sso.php "$final_path/index.php"
-ynh_replace_string "domain.tld" "$domain" "$final_path/index.php"
-ynh_replace_string "ALIASTOCHANGE" "$final_path" "$final_path/index.php"
+ynh_replace_string "__DOMAIN__" "$domain" "$final_path/index.php"
+ynh_replace_string "__ALIASTOCHANGE__" "$final_path" "$final_path/index.php"
 if [ $path_url = "/" ]; then
-	ynh_replace_string "ROOTTOCHANGE" "" "$final_path/index.php"
+	ynh_replace_string "__ROOTTOCHANGE__" "" "$final_path/index.php"
 else
-	ynh_replace_string "ROOTTOCHANGE" "$path_url" "$final_path/index.php"
+	ynh_replace_string "__ROOTTOCHANGE__" "$path_url" "$final_path/index.php"
 fi
-
 
 # Install PGPback by chtixof to allow users to backup/restore their PGP private keys on the server
 cp -rf ../sources/pgpback "$final_path/"
@@ -178,7 +190,7 @@ chown -R $app: $final_path
 #=================================================
 # SETUP SSOWAT
 #=================================================
-ynh_print_info "Configuring SSOwat ..."
+ynh_print_info "Configuring SSOwat..."
 
 # Make app public if necessary
 if [ $is_public -eq 1 ]
