@@ -176,15 +176,6 @@ ynh_store_file_checksum --file="$application_file"
 #=================================================
 # GENERIC FINALIZATION
 #=================================================
-# SECURE FILES AND DIRECTORIES
-#=================================================
-
-# Set permissions to app files
-find $final_path/. -type d -exec chmod 755 {} \;
-find $final_path/. -type f -exec chmod 644 {} \;
-chown -R $app: $final_path
-
-#=================================================
 # SETUP LOGROTATE
 #=================================================
 ynh_script_progression --message="Configuring log rotation..."
@@ -194,6 +185,15 @@ touch $final_path/app/data/_data_/_default_/logs/fail2ban/auth-fail.log
 
 # Use logrotate to manage application logfile(s)
 ynh_use_logrotate --logfile=$final_path/app/data/_data_/_default_/logs/fail2ban/auth-fail.log
+
+#=================================================
+# SECURE FILES AND DIRECTORIES
+#=================================================
+
+# Set permissions to app files
+find $final_path/. -type d -exec chmod 755 {} \;
+find $final_path/. -type f -exec chmod 644 {} \;
+chown -R $app: $final_path
 
 #=================================================
 # SETUP FAIL2BAN
