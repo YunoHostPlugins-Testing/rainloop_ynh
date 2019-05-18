@@ -121,6 +121,9 @@ ynh_add_fpm_config
 #=================================================
 ynh_script_progression --message="Upgrading rainloop configuration..."
 
+# Upgrade time_offset value for fail2ban
+ynh_replace_string --match_string="^time_offset = .*" --replace_string="time_offset = $(date +%:::z)" --target_file="$final_path/app/data/_data_/_default_/configs/application.ini"
+
 # update SSO
 cp ../sources/sso/sso.php "$final_path/index.php"
 ynh_replace_string --match_string="__DOMAIN__" --replace_string="$domain" --target_file="$final_path/index.php"
@@ -135,6 +138,17 @@ fi
 cp -rf ../sources/pgpback "$final_path/"
 
 #=================================================
+# SETUP LOGROTATE
+#=================================================
+ynh_script_progression --message="Upgrading logrotate configuration..." --weight=2
+
+mkdir -p $final_path/app/data/_data_/_default_/logs/fail2ban
+touch $final_path/app/data/_data_/_default_/logs/fail2ban/auth-fail.log
+
+# Use logrotate to manage app-specific logfile(s)
+ynh_use_logrotate --logfile=$final_path/app/data/_data_/_default_/logs/fail2ban/auth-fail.log --non-append
+
+#=================================================
 # GENERIC FINALIZATION
 #=================================================
 # SECURE FILES AND DIRECTORIES
@@ -144,6 +158,14 @@ cp -rf ../sources/pgpback "$final_path/"
 chown -R $app: $final_path
 find $final_path/. -type d -exec chmod 755 {} \;
 find $final_path/. -type f -exec chmod 644 {} \;
+
+#=================================================
+# UPGRADE FAIL2BAN
+#=================================================
+ynh_script_progression --message="Reconfiguring fail2ban..." --weight=9
+
+# Create a dedicated fail2ban config
+ynh_add_fail2ban_config --logpath="$final_path/app/data/_data_/_default_/logs/fail2ban/auth-fail.log" --failregex="Auth failed: ip=<HOST>.*$"
 
 #=================================================
 # SETUP SSOWAT

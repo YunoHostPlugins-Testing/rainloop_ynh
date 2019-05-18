@@ -136,6 +136,7 @@ ynh_replace_string --match_string="__MYSQLUSER__" --replace_string=$db_name --ta
 ynh_replace_string --match_string="__MYSQLPASSWORD__" --replace_string="$db_pwd" --target_file="$application_file"
 ynh_replace_string --match_string="__LANGTOCHANGE__" --replace_string=$lang --target_file="$application_file"
 ynh_replace_string --match_string="__PLUGINSTOENABLE__" --replace_string="$plugins" --target_file="$application_file"
+ynh_replace_string --match_string="__TIME_ZONE__" --replace_string="$(date +%:::z)" --target_file="$application_file"
 
 
 # Set admin password
@@ -182,6 +183,25 @@ ynh_store_file_checksum --file="$application_file"
 find $final_path/. -type d -exec chmod 755 {} \;
 find $final_path/. -type f -exec chmod 644 {} \;
 chown -R $app: $final_path
+
+#=================================================
+# SETUP LOGROTATE
+#=================================================
+ynh_script_progression --message="Configuring log rotation..."
+
+mkdir -p $final_path/app/data/_data_/_default_/logs/fail2ban
+touch $final_path/app/data/_data_/_default_/logs/fail2ban/auth-fail.log
+
+# Use logrotate to manage application logfile(s)
+ynh_use_logrotate --logfile=$final_path/app/data/_data_/_default_/logs/fail2ban/auth-fail.log
+
+#=================================================
+# SETUP FAIL2BAN
+#=================================================
+ynh_script_progression --message="Configuring fail2ban..." --weight=8
+
+# Create a dedicated fail2ban config
+ynh_add_fail2ban_config --logpath="$final_path/app/data/_data_/_default_/logs/fail2ban/auth-fail.log" --failregex="Auth failed: ip=<HOST>.*$"
 
 #=================================================
 # SETUP SSOWAT

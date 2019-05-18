@@ -55,6 +55,22 @@ ynh_script_progression --message="Removing php-fpm configuration..." --weight=2
 ynh_remove_fpm_config
 
 #=================================================
+# REMOVE LOGROTATE CONFIGURATION
+#=================================================
+ynh_script_progression --message="Removing logrotate configuration..."
+
+# Remove the app-specific logrotate config
+ynh_remove_logrotate
+
+#=================================================
+# REMOVE FAIL2BAN CONFIGURATION
+#=================================================
+ynh_script_progression --message="Removing fail2ban configuration..." --weight=8
+
+# Remove the dedicated fail2ban config
+ynh_remove_fail2ban_config
+
+#=================================================
 # SPECIFIC REMOVE
 #=================================================
 # REMOVE GPG KEY
