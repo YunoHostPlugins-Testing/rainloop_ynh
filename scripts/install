@@ -19,7 +19,6 @@ ynh_abort_if_errors
 #=================================================
 # RETRIEVE ARGUMENTS FROM THE MANIFEST
 #=================================================
-ynh_print_info "Retrieve arguments from the manifest ..."
 
 domain=$YNH_APP_ARG_DOMAIN
 path_url=$YNH_APP_ARG_PATH
@@ -33,53 +32,50 @@ app=$YNH_APP_INSTANCE_NAME
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
 #=================================================
-ynh_print_info "Validating installation parameters..."
+ynh_script_progression --message="Validating installation parameters..." --weight=2
 
 final_path=/var/www/$app
-test ! -e "$final_path" || ynh_die "This path already contains a folder"
-
-# Normalize the url path syntax
-path_url=$(ynh_normalize_url_path $path_url)
+test ! -e "$final_path" || ynh_die --message="This path already contains a folder"
 
 # Register (book) web path
-ynh_webpath_register $app $domain $path_url
+ynh_webpath_register --app=$app --domain=$domain --path_url=$path_url
 
 #=================================================
 # STORE SETTINGS FROM MANIFEST
 #=================================================
-ynh_print_info "Storing installation settings..."
+ynh_script_progression --message="Storing installation settings..."
 
-ynh_app_setting_set $app domain $domain
-ynh_app_setting_set $app path $path_url
-ynh_app_setting_set $app is_public $is_public
-ynh_app_setting_set $app lang $lang
-ynh_app_setting_set $app password $password #9999 Check if it's need to save password
-ynh_app_setting_set $app ldap $ldap
+ynh_app_setting_set --app=$app --key=domain --value=$domain
+ynh_app_setting_set --app=$app --key=path --value=$path_url
+ynh_app_setting_set --app=$app --key=is_public --value=$is_public
+ynh_app_setting_set --app=$app --key=lang --value=$lang
+ynh_app_setting_set --app=$app --key=password --value=$password
+ynh_app_setting_set --app=$app --key=ldap --value=$ldap
 
 #=================================================
 # STANDARD MODIFICATIONS
 #=================================================
 # CREATE A MYSQL DATABASE
 #=================================================
-ynh_print_info "Creating a MySQL database..."
+ynh_script_progression --message="Creating a MySQL database..." --weight=2
 
-db_name=$(ynh_sanitize_dbid $app)
-ynh_app_setting_set $app db_name $db_name
-ynh_mysql_setup_db $db_name $db_name
+db_name=$(ynh_sanitize_dbid --db_name=$app)
+ynh_app_setting_set --app=$app --key=db_name --value=$db_name
+ynh_mysql_setup_db --db_user=$db_name --db_name=$db_name
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
-ynh_print_info "Setting up source files..."
+ynh_script_progression --message="Setting up source files..." --weight=3
 
-ynh_app_setting_set $app final_path $final_path
+ynh_app_setting_set --app=$app --key=final_path --value=$final_path
 # Download, check integrity, uncompress and patch the source from app.src
-ynh_setup_source "$final_path/app"
+ynh_setup_source --dest_dir="$final_path/app"
 
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
-ynh_print_info "Configuring nginx web server..."
+ynh_script_progression --message="Configuring nginx web server..."
 
 # Create a dedicated nginx config
 ynh_add_nginx_config
@@ -87,15 +83,15 @@ ynh_add_nginx_config
 #=================================================
 # CREATE DEDICATED USER
 #=================================================
-ynh_print_info "Configuring system user..."
+ynh_script_progression --message="Configuring system user..." --weight=2
 
 # Create a system user
-ynh_system_user_create $app
+ynh_system_user_create --username=$app
 
 #=================================================
 # PHP-FPM CONFIGURATION
 #=================================================
-ynh_print_info "Configuring php-fpm..."
+ynh_script_progression --message="Configuring php-fpm..." --weight=2
 
 # Create a dedicated php-fpm config
 ynh_add_fpm_config
@@ -105,7 +101,7 @@ ynh_add_fpm_config
 #=================================================
 # AUTOCONFIG
 #=================================================
-ynh_print_info "Configuring rainloop..."
+ynh_script_progression --message= "Configuring rainloop..." --weight=3
 
 # Set lang => define from install manifest
 case "$lang" in
@@ -118,7 +114,7 @@ case "$lang" in
 	*)
 		lang="en"
 esac
-ynh_app_setting_set $app lang $lang
+ynh_app_setting_set --app=$app --key=lang --value=$lang
 
 # Set plugins
 # This plugin is trying to automatically grab unknown domains if users want to add external email accounts
@@ -128,18 +124,19 @@ then
 	# This plugin is to suggest YunoHost users in recipients list
 	plugins="$plugins,ynh-ldap-suggestions"
 fi
-ynh_app_setting_set $app plugins "$plugins"
+ynh_app_setting_set --app=$app --key=plugins --value="$plugins"
 
 
 mkdir -p "$final_path/app/data/_data_/_default_/configs/"
 application_file="$final_path/app/data/_data_/_default_/configs/application.ini"
 
 cp ../conf/data/configs/application.ini "$application_file"
-ynh_replace_string "__DOMAIN__" $domain "$application_file"
-ynh_replace_string "__MYSQLUSER__" $db_name "$application_file"
-ynh_replace_string "__MYSQLPASSWORD__" "$db_pwd" "$application_file"
-ynh_replace_string "__LANGTOCHANGE__" $lang "$application_file"
-ynh_replace_string "__PLUGINSTOENABLE__" "$plugins" "$application_file"
+ynh_replace_string --match_string="__DOMAIN__" --replace_string=$domain --target_file="$application_file"
+ynh_replace_string --match_string="__MYSQLUSER__" --replace_string=$db_name --target_file="$application_file"
+ynh_replace_string --match_string="__MYSQLPASSWORD__" --replace_string="$db_pwd" --target_file="$application_file"
+ynh_replace_string --match_string="__LANGTOCHANGE__" --replace_string=$lang --target_file="$application_file"
+ynh_replace_string --match_string="__PLUGINSTOENABLE__" --replace_string="$plugins" --target_file="$application_file"
+ynh_replace_string --match_string="__TIME_ZONE__" --replace_string="$(date +%:::z)" --target_file="$application_file"
 
 
 # Set admin password
@@ -148,8 +145,8 @@ php ../conf/config.php --index="$final_path/app/index.php" --password="$password
 # Add default domain configs by looping through all the domains already added
 mkdir -p "$final_path/app/data/_data_/_default_/domains/"
 # get list of ldap domains
-alldomains=`ldapsearch -LLL -x -b ou=domains,dc=yunohost,dc=org -s one "objectclass=top" virtualdomain | grep -v "dn:" | sed "s/virtualdomain://" `
-for ldomain in $alldomains ; do
+alldomains=$(ldapsearch -LLL -x -b ou=domains,dc=yunohost,dc=org -s one "objectclass=top" virtualdomain | grep -v "dn:" | sed "s/virtualdomain://")
+for ldomain in $alldomains; do
 	cp ../conf/data/domains/domain.tld.ini "$final_path/app/data/_data_/_default_/domains/$ldomain.ini"
 done
 # Add wildcard domain for auto-grab
@@ -158,12 +155,12 @@ cp ../conf/data/domains/default.ini "$final_path/app/data/_data_/_default_/domai
 
 # install SSO - at the moment the index is the SSO and rainloop is installed in /app
 cp ../sources/sso/sso.php "$final_path/index.php"
-ynh_replace_string "__DOMAIN__" "$domain" "$final_path/index.php"
-ynh_replace_string "__ALIASTOCHANGE__" "$final_path" "$final_path/index.php"
-if [ $path_url = "/" ]; then
-	ynh_replace_string "__ROOTTOCHANGE__" "" "$final_path/index.php"
+ynh_replace_string --match_string="__DOMAIN__" --replace_string="$domain" --target_file="$final_path/index.php"
+ynh_replace_string --match_string="__ALIASTOCHANGE__" --replace_string="$final_path" --target_file="$final_path/index.php"
+if [ "$path_url" = "/" ]; then
+	ynh_replace_string --match_string="__ROOTTOCHANGE__" --replace_string="" --target_file="$final_path/index.php"
 else
-	ynh_replace_string "__ROOTTOCHANGE__" "$path_url" "$final_path/index.php"
+	ynh_replace_string --match_string="__ROOTTOCHANGE__" --replace_string="$path_url" --target_file="$final_path/index.php"
 fi
 
 # Install PGPback by chtixof to allow users to backup/restore their PGP private keys on the server
@@ -174,10 +171,21 @@ cp -rf ../sources/pgpback "$final_path/"
 #=================================================
 
 # Calculate and store the config file checksum into the app settings
-ynh_store_file_checksum "$application_file"
+ynh_store_file_checksum --file="$application_file"
 
 #=================================================
 # GENERIC FINALIZATION
+#=================================================
+# SETUP LOGROTATE
+#=================================================
+ynh_script_progression --message="Configuring log rotation..."
+
+mkdir -p $final_path/app/data/_data_/_default_/logs/fail2ban
+touch $final_path/app/data/_data_/_default_/logs/fail2ban/auth-fail.log
+
+# Use logrotate to manage application logfile(s)
+ynh_use_logrotate --logfile=$final_path/app/data/_data_/_default_/logs/fail2ban/auth-fail.log
+
 #=================================================
 # SECURE FILES AND DIRECTORIES
 #=================================================
@@ -188,26 +196,34 @@ find $final_path/. -type f -exec chmod 644 {} \;
 chown -R $app: $final_path
 
 #=================================================
+# SETUP FAIL2BAN
+#=================================================
+ynh_script_progression --message="Configuring fail2ban..." --weight=8
+
+# Create a dedicated fail2ban config
+ynh_add_fail2ban_config --logpath="$final_path/app/data/_data_/_default_/logs/fail2ban/auth-fail.log" --failregex="Auth failed: ip=<HOST>.*$"
+
+#=================================================
 # SETUP SSOWAT
 #=================================================
-ynh_print_info "Configuring SSOwat..."
+ynh_script_progression --message="Configuring SSOwat..."
 
 # Make app public if necessary
 if [ $is_public -eq 1 ]
 then
 	# unprotected_uris allows SSO credentials to be passed anyway.
-	ynh_app_setting_set $app unprotected_uris "/"
+	ynh_app_setting_set --app=$app --key=unprotected_uris --value="/"
 fi
 
 #=================================================
 # RELOAD NGINX
 #=================================================
-ynh_print_info "Reloading nginx web server..."
+ynh_script_progression --message="Reloading nginx web server..."
 
-systemctl reload nginx
+ynh_systemd_action --service_name=nginx --action=reload
 
 #=================================================
 # END OF SCRIPT
 #=================================================
 
-ynh_print_info "Installation of $app completed"
+ynh_script_progression --message="Installation of $app completed" --last
