@@ -86,21 +86,7 @@ ynh_script_progression --message="Reconfiguring rainloop..." --weight=2
 application_file="$final_path/app/data/_data_/_default_/configs/application.ini"
 ynh_replace_string --match_string="default_domain = .^" --replace_string="default_domain = \"$new_domain\"" --target_file="$application_file"
 
-if [ "$old_path" = "/" ] && [ "$new_path" = "/" ]
-then
-	ynh_replace_string --match_string="$old_domain" --replace_string="$new_domain" --target_file="$final_path/index.php"
-elif [ "$old_path" != "/" ] && [ "$new_path" != "/" ]
-then
-	ynh_replace_string --match_string="$old_domain$old_path" --replace_string="$new_domain$new_path" --target_file="$final_path/index.php"
-elif [ "$old_path" != "/" ] && [ "$new_path" = "/" ]
-then
-	ynh_replace_string --match_string="$old_domain$old_path" --replace_string="$new_domain" --target_file="$final_path/index.php"
-elif [ "$old_path" = "/" ] && [ "$new_path" != "/" ]
-then
-	ynh_replace_string --match_string="$old_domain" --replace_string="$new_domain$new_path" --target_file="$final_path/index.php"
-else
-	ynh_die --message="Error changing the URL"
-fi
+ynh_replace_string --match_string="$old_domain${old_path%/}" --replace_string="$new_domain${new_path%/}" --target_file="$final_path/index.php"
 
 #=================================================
 # GENERIC FINALISATION
