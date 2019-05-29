@@ -128,11 +128,7 @@ ynh_replace_string --match_string="^time_offset = .*" --replace_string="time_off
 cp ../sources/sso/sso.php "$final_path/index.php"
 ynh_replace_string --match_string="__DOMAIN__" --replace_string="$domain" --target_file="$final_path/index.php"
 ynh_replace_string --match_string="__ALIASTOCHANGE__" --replace_string="$final_path" --target_file="$final_path/index.php"
-if [ $path_url = "/" ]; then
-	ynh_replace_string --match_string="__ROOTTOCHANGE__" --replace_string="" --target_file="$final_path/index.php"
-else
-	ynh_replace_string --match_string="__ROOTTOCHANGE__" --replace_string="$path_url" --target_file="$final_path/index.php"
-fi
+ynh_replace_string --match_string="__ROOTTOCHANGE__" --replace_string="${path_url%/}" --target_file="$final_path/index.php"
 
 # Install PGPback by chtixof to allow users to backup/restore their PGP private keys on the server
 cp -rf ../sources/pgpback "$final_path/"
