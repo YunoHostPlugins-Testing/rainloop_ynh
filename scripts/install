@@ -1,159 +1,225 @@
 #!/bin/bash
 
-# Exit on command errors and treat unset variables as an error
-# It also activate set -eu
-	source .fonctions
-	TRAP_ON
+#=================================================
+# GENERIC START
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
 
-# Initial data
-	app=$YNH_APP_INSTANCE_NAME
-	rainloop_version=$(cat ../sources/rainloop_version)
+source _common.sh
+source /usr/share/yunohost/helpers
 
-# Source app helpers
-	source /usr/share/yunohost/helpers
+#=================================================
+# MANAGE SCRIPT FAILURE
+#=================================================
 
-# Retrieve arguments
-	domain=$YNH_APP_ARG_DOMAIN
-	path=$YNH_APP_ARG_PATH
-	is_public=$YNH_APP_ARG_IS_PUBLIC
-	password=$YNH_APP_ARG_PASSWORD
-	ldap=$YNH_APP_ARG_LDAP
-	lang=$YNH_APP_ARG_LANG
+# Exit if an error occurs during the execution of the script
+ynh_abort_if_errors
 
-# Correct path using .fonctions
-CHECK_PATH
+#=================================================
+# RETRIEVE ARGUMENTS FROM THE MANIFEST
+#=================================================
 
-# Check domain/path availability using .fonctions
-CHECK_DOMAINPATH
+domain=$YNH_APP_ARG_DOMAIN
+path_url=$YNH_APP_ARG_PATH
+is_public=$YNH_APP_ARG_IS_PUBLIC
+lang=$YNH_APP_ARG_LANG
+password=$YNH_APP_ARG_PASSWORD
+ldap=$YNH_APP_ARG_LDAP
 
-# Use 'rainloop' as database name and user
-	dbuser=$app
-	dbname=$app
-	dbpass=$(ynh_string_random)
+app=$YNH_APP_INSTANCE_NAME
 
-# Initialize database and store mysql password for upgrade
-	ynh_mysql_create_db "$dbname" "$dbuser" "$dbpass"
-	ynh_app_setting_set "$app" mysqlpwd "$dbpass"
+#=================================================
+# CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
+#=================================================
+ynh_script_progression --message="Validating installation parameters..." --weight=2
 
-# Create the final path and copy sources
-	CHECK_FINALPATH
-	final_path=/var/www/$app
+final_path=/var/www/$app
+test ! -e "$final_path" || ynh_die --message="This path already contains a folder"
 
-	rainloop_path=${final_path}/app
+# Register (book) web path
+ynh_webpath_register --app=$app --domain=$domain --path_url=$path_url
 
-	sudo rm -rf $final_path
-	sudo mkdir -p $final_path
-	sudo mkdir -p $rainloop_path
+#=================================================
+# STORE SETTINGS FROM MANIFEST
+#=================================================
+ynh_script_progression --message="Storing installation settings..."
 
-	# Download sources and keys
-	sudo wget -q https://github.com/RainLoop/rainloop-webmail/releases/download/v${rainloop_version}/rainloop-community-${rainloop_version}.zip
-	sudo wget -q https://github.com/RainLoop/rainloop-webmail/releases/download/v${rainloop_version}/rainloop-community-${rainloop_version}.zip.asc
-	sudo wget -q https://repository.rainloop.net/RainLoop.asc
-	# Verify the integrity of sources
-	sudo gpg --import --quiet RainLoop.asc
-	sudo gpg --verify --quiet rainloop-community-${rainloop_version}.zip.asc rainloop-community-${rainloop_version}.zip || ynh_die "Download failed"
-	sudo gpg --batch --delete-key --yes Rainloop
-	# Unzip
-	sudo unzip -qq rainloop-community-${rainloop_version}.zip -d $rainloop_path/
+ynh_app_setting_set --app=$app --key=domain --value=$domain
+ynh_app_setting_set --app=$app --key=path --value=$path_url
+ynh_app_setting_set --app=$app --key=is_public --value=$is_public
+ynh_app_setting_set --app=$app --key=lang --value=$lang
+ynh_app_setting_set --app=$app --key=password --value=$password
+ynh_app_setting_set --app=$app --key=ldap --value=$ldap
 
-	# Install plugins
-	sudo mkdir -p $rainloop_path/data/_data_/_default_/plugins
-	sudo cp -rf ../sources/plugins/auto-domain-grab $rainloop_path/data/_data_/_default_/plugins/.
-	sudo cp -rf ../sources/plugins/ynh-login-mapping $rainloop_path/data/_data_/_default_/plugins/.
-	sudo cp -rf ../sources/plugins/ynh-ldap-suggestions $rainloop_path/data/_data_/_default_/plugins/.
+#=================================================
+# STANDARD MODIFICATIONS
+#=================================================
+# CREATE A MYSQL DATABASE
+#=================================================
+ynh_script_progression --message="Creating a MySQL database..." --weight=2
 
-# Autoconfig
-	sudo mkdir -p $rainloop_path/data/_data_/_default_/configs/
-	application_file=$rainloop_path/data/_data_/_default_/configs/application.ini
+db_name=$(ynh_sanitize_dbid --db_name=$app)
+ynh_app_setting_set --app=$app --key=db_name --value=$db_name
+ynh_mysql_setup_db --db_user=$db_name --db_name=$db_name
 
-	# Set lang => define from install manifest
-	case "$lang" in
-        Francais)
-            lang="fr"
-            ;;
-        English)
-            lang="en"
-            ;;
-        *)
-            lang="en"
-	esac
-	ynh_app_setting_set "$app" lang "$lang"
+#=================================================
+# DOWNLOAD, CHECK AND UNPACK SOURCE
+#=================================================
+ynh_script_progression --message="Setting up source files..." --weight=3
 
-	# Set plugins
-	plugins="ynh-login-mapping,auto-domain-grab"		# This plugin is trying to automatically grab unknown domains if users want to add external email accounts
-	if [ "$ldap" = "Yes" ];
-	then
-		plugins="$plugins,ynh-ldap-suggestions"		# This plugin is to suggest YunoHost users in recipients list
-	fi
-	ynh_app_setting_set "$app" ldap "$ldap"
-	ynh_app_setting_set "$app" plugins "$plugins"
+ynh_app_setting_set --app=$app --key=final_path --value=$final_path
+# Download, check integrity, uncompress and patch the source from app.src
+ynh_setup_source --dest_dir="$final_path/app"
 
-	sudo cp ../conf/data/configs/application.ini $application_file
-	sudo sed -i "s@domain.tld@$domain@g"         $application_file
-	sudo sed -i "s@MYSQLUSER@$dbuser@g"          $application_file
-	sudo sed -i "s@MYSQLPASSWORD@$dbpass@g"      $application_file
-	sudo sed -i "s@LANGTOCHANGE@$lang@g"         $application_file
-	sudo sed -i "s@PLUGINSTOENABLE@$plugins@g"   $application_file
+#=================================================
+# NGINX CONFIGURATION
+#=================================================
+ynh_script_progression --message="Configuring nginx web server..."
+
+# Create a dedicated nginx config
+ynh_add_nginx_config
+
+#=================================================
+# CREATE DEDICATED USER
+#=================================================
+ynh_script_progression --message="Configuring system user..." --weight=2
+
+# Create a system user
+ynh_system_user_create --username=$app
+
+#=================================================
+# PHP-FPM CONFIGURATION
+#=================================================
+ynh_script_progression --message="Configuring php-fpm..." --weight=2
+
+# Create a dedicated php-fpm config
+ynh_add_fpm_config
+
+#=================================================
+# SPECIFIC SETUP
+#=================================================
+# AUTOCONFIG
+#=================================================
+ynh_script_progression --message= "Configuring rainloop..." --weight=3
+
+# Set lang => define from install manifest
+case "$lang" in
+	Francais)
+		lang="fr"
+		;;
+	English)
+		lang="en"
+		;;
+	*)
+		lang="en"
+esac
+ynh_app_setting_set --app=$app --key=lang --value=$lang
+
+# Set plugins
+# This plugin is trying to automatically grab unknown domains if users want to add external email accounts
+plugins="ynh-login-mapping,auto-domain-grab"
+if [ $ldap -eq 1 ]
+then
+	# This plugin is to suggest YunoHost users in recipients list
+	plugins="$plugins,ynh-ldap-suggestions"
+fi
+ynh_app_setting_set --app=$app --key=plugins --value="$plugins"
+
+
+mkdir -p "$final_path/app/data/_data_/_default_/configs/"
+application_file="$final_path/app/data/_data_/_default_/configs/application.ini"
+
+cp ../conf/data/configs/application.ini "$application_file"
+ynh_replace_string --match_string="__DOMAIN__" --replace_string=$domain --target_file="$application_file"
+ynh_replace_string --match_string="__MYSQLUSER__" --replace_string=$db_name --target_file="$application_file"
+ynh_replace_string --match_string="__MYSQLPASSWORD__" --replace_string="$db_pwd" --target_file="$application_file"
+ynh_replace_string --match_string="__LANGTOCHANGE__" --replace_string=$lang --target_file="$application_file"
+ynh_replace_string --match_string="__PLUGINSTOENABLE__" --replace_string="$plugins" --target_file="$application_file"
+ynh_replace_string --match_string="__TIME_ZONE__" --replace_string="$(date +%:::z)" --target_file="$application_file"
+
 
 # Set admin password
-	sudo php ../conf/config.php --index="$rainloop_path/index.php" --password="$password"
-	ynh_app_setting_set "$app" password "$password"
+php ../conf/config.php --index="$final_path/app/index.php" --password="$password"
 
 # Add default domain configs by looping through all the domains already added
-	sudo mkdir -p $rainloop_path/data/_data_/_default_/domains/
-	# get list of ldap domains
-	alldomains=`ldapsearch -LLL -x -b ou=domains,dc=yunohost,dc=org -s one "objectclass=top" virtualdomain | grep -v "dn:" | sed "s/virtualdomain://" `
-	for ldomain in $alldomains ; do
-		sudo cp ../conf/data/domains/domain.tld.ini $rainloop_path/data/_data_/_default_/domains/$ldomain.ini
-	done
-	# Add wildcard domain for auto-grab
-	sudo cp ../conf/data/domains/default.ini $rainloop_path/data/_data_/_default_/domains/default.ini
+mkdir -p "$final_path/app/data/_data_/_default_/domains/"
+# get list of ldap domains
+alldomains=$(ldapsearch -LLL -x -b ou=domains,dc=yunohost,dc=org -s one "objectclass=top" virtualdomain | grep -v "dn:" | sed "s/virtualdomain://")
+for ldomain in $alldomains; do
+	cp ../conf/data/domains/domain.tld.ini "$final_path/app/data/_data_/_default_/domains/$ldomain.ini"
+done
+# Add wildcard domain for auto-grab
+cp ../conf/data/domains/default.ini "$final_path/app/data/_data_/_default_/domains/default.ini"
+
 
 # install SSO - at the moment the index is the SSO and rainloop is installed in /app
-	sudo cp ../sources/sso/sso.php        			$final_path/index.php
-	sudo sed -i "s@domain.tld@$domain@g"  			$final_path/index.php
-	sudo sed -i "s@ALIASTOCHANGE@$final_path@g"  	$final_path/index.php
-	if [ $path = "/" ]; then
-	    sudo sed -i "s@ROOTTOCHANGE@@g"          	$final_path/index.php
-	else
-	    sudo sed -i "s@ROOTTOCHANGE@$path@g"     	$final_path/index.php
-	fi
+cp ../sources/sso/sso.php "$final_path/index.php"
+ynh_replace_string --match_string="__DOMAIN__" --replace_string="$domain" --target_file="$final_path/index.php"
+ynh_replace_string --match_string="__ALIASTOCHANGE__" --replace_string="$final_path" --target_file="$final_path/index.php"
+ynh_replace_string --match_string="__ROOTTOCHANGE__" --replace_string="${path_url%/}" --target_file="$final_path/index.php"
 
 # Install PGPback by chtixof to allow users to backup/restore their PGP private keys on the server
-	sudo cp -rf ../sources/pgpback        	  $final_path/.
+cp -rf ../sources/pgpback "$final_path/"
 
-# Set permissions to rainloop directory
-	sudo find $final_path/. -type d -exec chmod 755 {} \;
-	sudo find $final_path/. -type f -exec chmod 644 {} \;
-	sudo chown -R www-data:www-data $final_path
+#=================================================
+# STORE THE CONFIG FILE CHECKSUM
+#=================================================
 
-# Install Nginx configuration file
-	nginx_conf_file=/etc/nginx/conf.d/$domain.d/$app.conf
-	sudo cp ../conf/nginx.conf $nginx_conf_file
-	if [ $path = "/" ]; then
-	    sudo sed -i "s@ROOTTOCHANGE@@g"          $nginx_conf_file
-	else
-	    sudo sed -i "s@ROOTTOCHANGE@$path@g"     $nginx_conf_file
-	fi
-    sudo sed -i "s@PATHTOCHANGE@$path@g"         $nginx_conf_file
-	sudo sed -i "s@ALIASTOCHANGE@$final_path/@g" $nginx_conf_file
-	sudo sed -i "s@NAMETOCHANGE@$app@g"          $nginx_conf_file
-	sudo chown root:                             $nginx_conf_file
-	sudo chmod 644                               $nginx_conf_file
+# Calculate and store the config file checksum into the app settings
+ynh_store_file_checksum --file="$application_file"
 
-	finalphpconf=/etc/php5/fpm/pool.d/$app.conf
-	sudo cp ../conf/php-fpm.conf        $finalphpconf
-	sudo sed -i "s@NAMETOCHANGE@$app@g" $finalphpconf
-	sudo chown root:                    $finalphpconf
-	sudo chmod 644                      $finalphpconf
+#=================================================
+# GENERIC FINALIZATION
+#=================================================
+# SETUP LOGROTATE
+#=================================================
+ynh_script_progression --message="Configuring log rotation..."
+
+mkdir -p $final_path/app/data/_data_/_default_/logs/fail2ban
+touch $final_path/app/data/_data_/_default_/logs/fail2ban/auth-fail.log
+
+# Use logrotate to manage application logfile(s)
+ynh_use_logrotate --logfile=$final_path/app/data/_data_/_default_/logs/fail2ban/auth-fail.log
+
+#=================================================
+# SECURE FILES AND DIRECTORIES
+#=================================================
+
+# Set permissions to app files
+find $final_path/. -type d -exec chmod 755 {} \;
+find $final_path/. -type f -exec chmod 644 {} \;
+chown -R $app: $final_path
+
+#=================================================
+# SETUP FAIL2BAN
+#=================================================
+ynh_script_progression --message="Configuring fail2ban..." --weight=8
+
+# Create a dedicated fail2ban config
+ynh_add_fail2ban_config --logpath="$final_path/app/data/_data_/_default_/logs/fail2ban/auth-fail.log" --failregex="Auth failed: ip=<HOST>.*$"
+
+#=================================================
+# SETUP SSOWAT
+#=================================================
+ynh_script_progression --message="Configuring SSOwat..."
 
 # Make app public if necessary
-	ynh_app_setting_set "$app" is_public "$is_public"
-	if [ "$is_public" = "Yes" ];
-	then
-		ynh_app_setting_set "$app" skipped_uris "/"
-	fi
+if [ $is_public -eq 1 ]
+then
+	# unprotected_uris allows SSO credentials to be passed anyway.
+	ynh_app_setting_set --app=$app --key=unprotected_uris --value="/"
+fi
 
-# Reload services
-	sudo service php5-fpm reload
-	sudo service nginx reload
+#=================================================
+# RELOAD NGINX
+#=================================================
+ynh_script_progression --message="Reloading nginx web server..."
+
+ynh_systemd_action --service_name=nginx --action=reload
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_script_progression --message="Installation of $app completed" --last

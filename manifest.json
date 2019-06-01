@@ -1,81 +1,88 @@
 {
-    "packaging_format": 1,
-    "name": "Rainloop",
-    "id": "rainloop",
-    "description": {
-        "en": "Lightweight multi-account webmail",
-        "fr": "Webmail léger multi-comptes"
-    },
-    "url": "http://rainloop.net/",
-    "license": "AGPL-3.0",
-    "maintainer": {
-        "name": "scith, Djip007, polytan02"
-    },
-    "multi_instance": true,
-    "services": [
-        "nginx",
-        "php5-fpm",
-        "mysql"
-    ],
-    "requirements": {
-        "yunohost": ">= 2.4.0"
-     },
-    "arguments": {
-        "install" : [
-            {
-                "name": "domain",
-                "type": "domain",
-                "ask": {
-                    "en": "Choose a domain for Rainloop",
-                    "fr": "Choisissez un domaine pour Rainloop"
-                },
-                "example": "domain.org"
-            },
-            {
-                "name": "path",
-                "type": "path",
-                "ask": {
-                    "en": "Choose a path for Rainloop",
-                    "fr": "Choisissez un chemin pour Rainloop"
-                },
-                "example": "/rainloop",
-                "default": "/rainloop"
-            },
-	    {
-               "name": "is_public",
-                "ask": {
-                    "en": "Is it a public application?",
-                    "fr": "Est-ce une page publique ?"
-                },
-                "choices": ["Yes", "No"],
-                "default": "No"
-	    },
-	    {
-                "name": "password",
-                "type": "password",
-                "ask": {
-                    "en": "Choose a strong password for the 'admin' user",
-                    "fr": "Choisissez un mot de passe fort pour l'administrateur 'admin'"
-                }
-	    },
-	    {
-               "name": "ldap",
-                "ask": {
-                    "en": "Do you want to add YunoHost users to the recipients suggestions?",
-                    "fr": "Souhaitez-vous ajouter les utilisateurs YunoHost dans les suggestions de destinataires ?"
-                },
-                "choices": ["Yes", "No"],
-                "default": "Yes"
-	    },
-	    {
-               "name": "lang",
-                "ask": {
-                    "en": "Select default language",
-                    "fr": "Definir la langue par defaut"
-                },
-                "choices": ["English", "Francais"],
-                "default": "English"
-	    }
-        ]
-    }
+	"name": "Rainloop",
+	"id": "rainloop",
+	"packaging_format": 1,
+	"description": {
+		"en": "Lightweight multi-account webmail",
+		"fr": "Webmail léger multi-comptes"
+	},
+	"version": "1.12.1~ynh2",
+	"url": "https://www.rainloop.net/",
+	"license": "AGPL-3.0-or-later",
+	"maintainer": {
+		"name": "scith, Djip007, polytan02"
+	},
+	"requirements": {
+		"yunohost": ">= 3.5.0"
+	},
+	"multi_instance": true,
+	"services": [
+		"nginx",
+		"php7.0-fpm",
+		"mysql"
+	],
+	"arguments": {
+		"install" : [
+			{
+				"name": "domain",
+				"type": "domain",
+				"ask": {
+					"en": "Choose a domain name for Rainloop",
+					"fr": "Choisissez un nom de domaine pour Rainloop"
+				},
+                "example": "example.com"
+			},
+			{
+				"name": "path",
+				"type": "path",
+				"ask": {
+					"en": "Choose a path for Rainloop",
+					"fr": "Choisissez un chemin pour Rainloop"
+				},
+				"example": "/rainloop",
+				"default": "/rainloop"
+			},
+			{
+				"name": "is_public",
+				"type": "boolean",
+				"ask": {
+					"en": "Is it a public application?",
+					"fr": "Est-ce une application publique ?"
+				},
+				"default": false
+			},
+			{
+				"name": "password",
+				"type": "password",
+				"ask": {
+					"en": "Set the administrator password",
+					"fr": "Définissez le mot de passe administrateur"
+				},
+				"help": {
+					"en": "Use the help field to add an information for the admin about this question.",
+					"fr": "Utilisez le champ aide pour ajouter une information à l'intention de l'administrateur à propos de cette question."
+				},
+				"example": "Choose a password"
+			},
+			{
+				"name": "ldap",
+				"type": "boolean",
+				"ask": {
+					"en": "Do you want to add YunoHost users to the recipients suggestions?",
+					"fr": "Souhaitez-vous ajouter les utilisateurs YunoHost dans les suggestions de destinataires ?"
+				},
+				"default": true
+			},
+			{
+				"name": "lang",
+				"type": "string",
+				"ask": {
+					"en": "Select default language",
+					"fr": "Definir la langue par defaut"
+				},
+				"choices": ["English", "Francais"],
+				"default": "English"
+			}
+		]
+	}
 }

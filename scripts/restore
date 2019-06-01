@@ -1,56 +1,115 @@
 #!/bin/bash
 
-# Exit on command errors and treat unset variables as an error
-	set -eu
+#=================================================
+# GENERIC START
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
 
-# Get multi-instances specific variables
-	app=$YNH_APP_INSTANCE_NAME
+source ../settings/scripts/_common.sh
+source /usr/share/yunohost/helpers
 
-# Source app helpers
-	source /usr/share/yunohost/helpers
+#=================================================
+# MANAGE SCRIPT FAILURE
+#=================================================
 
-# Retrieve old app settings
-	domain=$(ynh_app_setting_get "$app" domain)
-	path=$(ynh_app_setting_get "$app" path)
-	dbname=$app
-	dbuser=$app
-	dbpass=$(ynh_app_setting_get "$app" mysqlpwd)
+# Exit if an error occurs during the execution of the script
+ynh_abort_if_errors
 
-# Check domain/path availability
-	sudo yunohost app checkurl "${domain}${path}" -a "$app" \
-	  || ynh_die
+#=================================================
+# LOAD SETTINGS
+#=================================================
+ynh_script_progression --message="Loading settings..." --time --weight=2
 
-# Check destination directory
-	DESTDIR="/var/www/$app"
-	[[ -d $DESTDIR ]] && ynh_die \
-	"The destination directory '$DESTDIR' already exists.\
-	 You should safely delete it before restoring this app."
+app=$YNH_APP_INSTANCE_NAME
 
-# Check configuration files
-	nginx_conf="/etc/nginx/conf.d/${domain}.d/${app}.conf"
-	[[ -f $nginx_conf ]] && ynh_die \
-	"The NGINX configuration already exists at '${nginx_conf}'.
-	 You should safely delete it before restoring this app."
-	phpfpm_conf="/etc/php5/fpm/pool.d/${app}.conf"
-	[[ -f $phpfpm_conf ]] && ynh_die \
-	"The PHP FPM configuration already exists at '${phpfpm_conf}'.
-	 You should safely delete it before restoring this app."
+domain=$(ynh_app_setting_get --app=$app --key=domain)
+path_url=$(ynh_app_setting_get --app=$app --key=path)
+final_path=$(ynh_app_setting_get --app=$app --key=final_path)
+db_name=$(ynh_app_setting_get --app=$app --key=db_name)
 
-# Restore the app files
-	sudo cp -a ./sources "$DESTDIR"
+#=================================================
+# CHECK IF THE APP CAN BE RESTORED
+#=================================================
+ynh_script_progression --message="Validating restoration parameters..." --time --weight=1
 
-# Create and restore the database
-	ynh_mysql_create_db $dbname $dbuser $dbpass
-	ynh_mysql_connect_as $dbuser $dbpass $dbname < ./dump.sql
+ynh_webpath_available --domain=$domain --path_url=$path_url \
+	|| ynh_die --message="Path not available: ${domain}${path_url}"
+test ! -d $final_path \
+	|| ynh_die --message="There is already a directory: $final_path "
 
-# Fix installation directories and permissions
-	sudo mkdir -p "${DESTDIR}/logs" "${DESTDIR}/temp"
-	sudo chown -R www-data: "$DESTDIR"
+#=================================================
+# STANDARD RESTORATION STEPS
+#=================================================
+# RESTORE THE NGINX CONFIGURATION
+#=================================================
 
-# Restore configuration files
-	sudo cp -a ./nginx.conf   "$nginx_conf"
-	sudo cp -a ./php-fpm.conf "$phpfpm_conf"
+ynh_restore_file --origin_path="/etc/nginx/conf.d/$domain.d/$app.conf"
 
-# Reload services
-	sudo service php5-fpm reload
-	sudo service nginx reload
+#=================================================
+# RESTORE THE APP MAIN DIR
+#=================================================
+ynh_script_progression --message="Restoring the app main directory..." --time --weight=1
+
+ynh_restore_file --origin_path="$final_path"
+
+#=================================================
+# RESTORE THE MYSQL DATABASE
+#=================================================
+ynh_script_progression --message="Restoring the MySQL database..." --time --weight=2
+
+db_pwd=$(ynh_app_setting_get --app=$app --key=mysqlpwd)
+ynh_mysql_setup_db --db_user=$db_name --db_name=$db_name --db_pwd=$db_pwd
+ynh_mysql_connect_as --user=$db_name --password=$db_pwd --database=$db_name < ./db.sql
+
+#=================================================
+# RECREATE THE DEDICATED USER
+#=================================================
+ynh_script_progression --message="Recreating the dedicated system user..." --time --weight=2
+
+# Create the dedicated user (if not existing)
+ynh_system_user_create --username=$app
+
+#=================================================
+# RESTORE USER RIGHTS
+#=================================================
+
+# Restore permissions on app files
+chown -R $app: $final_path
+
+#=================================================
+# RESTORE THE PHP-FPM CONFIGURATION
+#=================================================
+
+ynh_restore_file --origin_path="/etc/php/7.0/fpm/pool.d/$app.conf"
+
+#=================================================
+# RESTORE FAIL2BAN CONFIGURATION
+#=================================================
+ynh_script_progression --message="Restoring the fail2ban configuration..." --time --weight=6
+
+ynh_restore_file "/etc/fail2ban/jail.d/$app.conf"
+ynh_restore_file "/etc/fail2ban/filter.d/$app.conf"
+ynh_systemd_action --action=restart --service_name=fail2ban
+
+#=================================================
+# RESTORE THE LOGROTATE CONFIGURATION
+#=================================================
+
+ynh_restore_file --origin_path="/etc/logrotate.d/$app"
+
+#=================================================
+# GENERIC FINALIZATION
+#=================================================
+# RELOAD NGINX AND PHP-FPM
+#=================================================
+ynh_script_progression --message="Reloading nginx web server and php-fpm..." --time --weight=1
+
+ynh_systemd_action --service_name=php7.0-fpm --action=reload
+ynh_systemd_action --service_name=nginx --action=reload
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_script_progression --message="Restoration completed for $app" --time --last
