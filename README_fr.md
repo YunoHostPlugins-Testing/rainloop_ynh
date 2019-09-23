@@ -29,7 +29,7 @@ Veuillez vous rendre sur http://DOMAIN.TLD/rainloop/app/?admin
 
 - Le nom d'utilisateur admin par défaut est : admin
 - Le mot de passe admin par défaut est : Mot de passe choisi lors de l'installation
-- Si vous avez oublié votre mot de passe, vous pouvez le retrouver avec ``sudo yunohost app settings rainloop password``
+- Si vous avez oublié votre mot de passe, vous pouvez le retrouver avec ``sudo yunohost app setting rainloop password``
 
 Chaque utilisateur peut ajouter un carnet d'adresse distant CardDav via leurs propres paramètres.
 
