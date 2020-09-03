@@ -103,19 +103,6 @@ ynh_add_fpm_config
 #=================================================
 ynh_script_progression --message= "Configuring rainloop..." --weight=3
 
-# Set lang => define from install manifest
-case "$lang" in
-	Francais)
-		lang="fr"
-		;;
-	English)
-		lang="en"
-		;;
-	*)
-		lang="en"
-esac
-ynh_app_setting_set --app=$app --key=lang --value=$lang
-
 # Set plugins
 # This plugin is trying to automatically grab unknown domains if users want to add external email accounts
 plugins="ynh-login-mapping,auto-domain-grab"
