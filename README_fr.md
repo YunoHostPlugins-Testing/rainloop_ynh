@@ -60,7 +60,7 @@ Chaque utilisateur peut ajouter un carnet d'adresse distant CardDav via leurs pr
 
  * Signaler un bug : https://github.com/YunoHost-Apps/rainloop_ynh/issues
  * Site de Rainloop : https://www.rainloop.net/
- * Github de Rainloop : https://github.com/RainLoop/rainloop-webmail
+ * GitHub de Rainloop : https://github.com/RainLoop/rainloop-webmail
  * Site web YunoHost : https://yunohost.org/
 
 ---

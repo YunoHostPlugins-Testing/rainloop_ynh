@@ -61,7 +61,7 @@ Each user can add a remote carddav server from their own parameters interface.
 
  * Report a bug: https://github.com/YunoHost-Apps/rainloop_ynh/issues
  * Rainloop website: https://www.rainloop.net/
- * Rainloop github website: https://github.com/RainLoop/rainloop-webmail
+ * Rainloop gitHub website: https://github.com/RainLoop/rainloop-webmail
  * YunoHost website: https://yunohost.org/
 
 ---
