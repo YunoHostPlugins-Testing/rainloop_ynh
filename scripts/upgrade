@@ -58,7 +58,7 @@ fi
 #=================================================
 # BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
 #=================================================
-ynh_script_progression --message="Backing up the app before upgrading (may take a while)..." --weight=4
+ynh_script_progression --message="Backing up Rainloop before upgrading (may take a while)..." --weight=4
 
 # Backup the current version of the app
 ynh_backup_before_upgrade
@@ -93,7 +93,7 @@ fi
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
-ynh_script_progression --message="Upgrading nginx web server configuration..." --weight=2
+ynh_script_progression --message="Upgrading NGINX web server configuration..." --weight=2
 
 # Create a dedicated nginx config
 ynh_add_nginx_config
@@ -109,7 +109,7 @@ ynh_system_user_create --username=$app
 #=================================================
 # PHP-FPM CONFIGURATION
 #=================================================
-ynh_script_progression --message="Upgrading php-fpm configuration..." --weight=2
+ynh_script_progression --message="Upgrading PHP-FPM configuration..." --weight=2
 
 # Create a dedicated php-fpm config
 ynh_add_fpm_config
@@ -119,7 +119,7 @@ ynh_add_fpm_config
 #=================================================
 # UPDATE SSO AND PGP
 #=================================================
-ynh_script_progression --message="Upgrading rainloop configuration..."
+ynh_script_progression --message="Upgrading Rainloop configuration..."
 
 # Upgrade time_offset value for fail2ban
 # FIXME Temporary fix for rainloop, waiting for https://github.com/YunoHost/yunohost/pull/752 to be released.
@@ -161,7 +161,7 @@ find $final_path/. -type f -exec chmod 644 {} \;
 #=================================================
 # UPGRADE FAIL2BAN
 #=================================================
-ynh_script_progression --message="Reconfiguring fail2ban..." --weight=9
+ynh_script_progression --message="Reconfiguring Fail2ban..." --weight=9
 
 # Create a dedicated fail2ban config
 ynh_add_fail2ban_config --logpath="$final_path/app/data/_data_/_default_/logs/fail2ban/auth-fail.log" --failregex="Auth failed: ip=<HOST>.*$"
@@ -181,7 +181,7 @@ fi
 #=================================================
 # RELOAD NGINX
 #=================================================
-ynh_script_progression --message="Reloading nginx web server..."
+ynh_script_progression --message="Reloading NGINX web server..."
 
 ynh_systemd_action --service_name=nginx --action=reload
 
