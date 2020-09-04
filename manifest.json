@@ -76,7 +76,7 @@
 					"en": "Select default language",
 					"fr": "Definir la langue par defaut"
 				},
-				"choices": ["en", "fr"],
+				"choices": ["de", "en", "es", "fr", "it", "pt"],
 				"default": "en"
 			}
 		]
