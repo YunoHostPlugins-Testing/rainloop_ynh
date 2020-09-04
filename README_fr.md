@@ -1,7 +1,7 @@
 # Rainloop pour YunoHost
 
 [![Integration level](https://dash.yunohost.org/integration/rainloop.svg)](https://dash.yunohost.org/appci/app/rainloop) ![](https://ci-apps.yunohost.org/ci/badges/rainloop.status.svg) ![](https://ci-apps.yunohost.org/ci/badges/rainloop.maintain.svg)  
-[![Install Rainloop with YunoHost](https://install-app.yunohost.org/install-with-yunohost.png)](https://install-app.yunohost.org/?app=rainloop)
+[![Installer Rainloop avec YunoHost](https://install-app.yunohost.org/install-with-yunohost.png)](https://install-app.yunohost.org/?app=rainloop)
 
 *[Read this readme in english.](./README.md)* 
 
@@ -33,8 +33,8 @@ Veuillez vous rendre sur http://DOMAIN.TLD/rainloop/app/?admin
 
 Chaque utilisateur peut ajouter un carnet d'adresse distant CardDav via leurs propres paramètres.
 
-- Si vous utilisez Baikal, l'adresse à renseigner est du type `https://DOMAIN.TLD/baikal/card.php/addressbooks/UTILISATEUR/default`
-- Si vous utilisez NextCloud, l'adresse à renseigner est du type `https://DOMAIN.TLD/nextcloud/remote.php/carddav/addressbooks/USER/contacts`
+- Si vous utilisez Baïkal, l'adresse à renseigner est du type `https://DOMAIN.TLD/baikal/card.php/addressbooks/UTILISATEUR/default`
+- Si vous utilisez Nextcloud, l'adresse à renseigner est du type `https://DOMAIN.TLD/nextcloud/remote.php/carddav/addressbooks/USER/contacts`
 
 ## Documentation
 

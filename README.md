@@ -28,14 +28,14 @@ Rainloop is a lightweight webmail.
 Go to http://DOMAIN.TLD/rainloop/app/?admin
 
 - The default login: admin
-- The default password: Password chosen during install
+- The default password: password chosen during install
 
 - If you lost the admin password, you can retrieve it using `sudo yunohost app setting rainloop password`
 
 Each user can add a remote carddav server from their own parameters interface.
 
-- If you use baikal, the CardDav address is `https://DOMAIN.TLD/baikal/card.php/addressbooks/USER/default/`
-- If you use NextCloud, the CardDav address is `https://DOMAIN.TLD/nextcloud/remote.php/carddav/addressbooks/USER/contacts`
+- If you use Baïkal, the CardDav address is `https://DOMAIN.TLD/baikal/card.php/addressbooks/USER/default/`
+- If you use Nextcloud, the CardDav address is `https://DOMAIN.TLD/nextcloud/remote.php/carddav/addressbooks/USER/contacts`
 
 ## Documentation
 
