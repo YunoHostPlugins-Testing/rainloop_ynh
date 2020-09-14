@@ -2,9 +2,9 @@
 	; Manifest
         domain="domain.tld"    (DOMAIN)
         path="/rainloop"    (PATH)
-        lang="English"
+        lang="en"
         is_public=1 (PUBLIC|public=1|private=0)
-	password="pass"
+	    password="pass"
         ldap=1
 
     ; Checks
@@ -29,4 +29,4 @@ Notification=none
 ;;; Upgrade options
 	; commit=e26b7e5823858ea5f526659f320692a2768786b5
 		name=Define ereg() if it does not exists 
-		manifest_arg=domain=DOMAIN&path=PATH&is_public=Yes&password=password&ldap=Yes&lang=English&
+		manifest_arg=domain=DOMAIN&path=PATH&is_public=Yes&password=password&ldap=Yes&lang=en&
