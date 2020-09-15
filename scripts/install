@@ -53,6 +53,13 @@ ynh_app_setting_set --app=$app --key=password --value=$password
 ynh_app_setting_set --app=$app --key=ldap --value=$ldap
 
 #=================================================
+# INSTALL DEPENDENCIES
+#=================================================
+ynh_script_progression --message="Installing dependencies..." --weight=1
+
+ynh_install_app_dependencies $pkg_dependencies
+
+#=================================================
 # STANDARD MODIFICATIONS
 #=================================================
 # CREATE A MYSQL DATABASE
@@ -75,9 +82,9 @@ ynh_setup_source --dest_dir="$final_path/app"
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
-ynh_script_progression --message="Configuring nginx web server..."
+ynh_script_progression --message="Configuring NGINX web server..."
 
-# Create a dedicated nginx config
+# Create a dedicated NGINX config
 ynh_add_nginx_config
 
 #=================================================
@@ -91,30 +98,18 @@ ynh_system_user_create --username=$app
 #=================================================
 # PHP-FPM CONFIGURATION
 #=================================================
-ynh_script_progression --message="Configuring php-fpm..." --weight=2
+ynh_script_progression --message="Configuring PHP-FPM..." --weight=2
 
-# Create a dedicated php-fpm config
+# Create a dedicated PHP-FPM config
 ynh_add_fpm_config
+phpversion=$(ynh_app_setting_get --app=$app --key=phpversion)
 
 #=================================================
 # SPECIFIC SETUP
 #=================================================
 # AUTOCONFIG
 #=================================================
-ynh_script_progression --message= "Configuring rainloop..." --weight=3
-
-# Set lang => define from install manifest
-case "$lang" in
-	Francais)
-		lang="fr"
-		;;
-	English)
-		lang="en"
-		;;
-	*)
-		lang="en"
-esac
-ynh_app_setting_set --app=$app --key=lang --value=$lang
+ynh_script_progression --message= "Configuring Rainloop..." --weight=3
 
 # Set plugins
 # This plugin is trying to automatically grab unknown domains if users want to add external email accounts
@@ -142,7 +137,7 @@ timezone="$(date +%:::z)"
 ynh_replace_string --match_string="__TIME_ZONE__" --replace_string="${timezone//-/\\-}" --target_file="$application_file"
 
 # Set admin password
-php ../conf/config.php --index="$final_path/app/index.php" --password="$password"
+php"${phpversion}" ../conf/config.php --index="$final_path/app/index.php" --password="$password"
 
 # Add default domain configs by looping through all the domains already added
 mkdir -p "$final_path/app/data/_data_/_default_/domains/"
@@ -196,7 +191,7 @@ chown -R $app: $final_path
 #=================================================
 # SETUP FAIL2BAN
 #=================================================
-ynh_script_progression --message="Configuring fail2ban..." --weight=8
+ynh_script_progression --message="Configuring Fail2ban..." --weight=8
 
 # Create a dedicated fail2ban config
 ynh_add_fail2ban_config --logpath="$final_path/app/data/_data_/_default_/logs/fail2ban/auth-fail.log" --failregex="Auth failed: ip=<HOST>.*$"
@@ -206,17 +201,18 @@ ynh_add_fail2ban_config --logpath="$final_path/app/data/_data_/_default_/logs/fa
 #=================================================
 ynh_script_progression --message="Configuring SSOwat..."
 
-# Make app public if necessary
+# Make app public if necessary or protect it
 if [ $is_public -eq 1 ]
 then
-	# unprotected_uris allows SSO credentials to be passed anyway.
-	ynh_app_setting_set --app=$app --key=unprotected_uris --value="/"
+	# Everyone can access the app.
+	# The "main" permission is automatically created before the install script.
+	 	ynh_permission_update --permission "main" --add "visitors"
 fi
 
 #=================================================
 # RELOAD NGINX
 #=================================================
-ynh_script_progression --message="Reloading nginx web server..."
+ynh_script_progression --message="Reloading NGINX web server..."
 
 ynh_systemd_action --service_name=nginx --action=reload
 

@@ -6,14 +6,14 @@
 		"en": "Lightweight multi-account webmail",
 		"fr": "Webmail léger multi-comptes"
 	},
-	"version": "1.12.1~ynh3",
+	"version": "1.14.0~ynh1",
 	"url": "https://www.rainloop.net/",
 	"license": "AGPL-3.0-or-later",
 	"maintainer": {
 		"name": "scith, Djip007, polytan02"
 	},
 	"requirements": {
-		"yunohost": ">= 3.5.0"
+		"yunohost": ">= 3.8.1"
 	},
 	"multi_instance": true,
 	"services": [
@@ -76,8 +76,8 @@
 					"en": "Select default language",
 					"fr": "Definir la langue par defaut"
 				},
-				"choices": ["English", "Francais"],
-				"default": "English"
+				"choices": ["de", "en", "es", "fr", "it", "pt"],
+				"default": "en"
 			}
 		]
 	}

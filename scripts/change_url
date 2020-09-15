@@ -50,7 +50,7 @@ fi
 #=================================================
 # MODIFY URL IN NGINX CONF
 #=================================================
-ynh_script_progression --message="Updating nginx web server configuration..." --weight=2
+ynh_script_progression --message="Updating NGINX web server configuration..." --weight=2
 
 nginx_conf_path=/etc/nginx/conf.d/$old_domain.d/$app.conf
 
@@ -81,7 +81,7 @@ fi
 #=================================================
 # CONFIGURE
 #=================================================
-ynh_script_progression --message="Reconfiguring rainloop..." --weight=2
+ynh_script_progression --message="Reconfiguring Rainloop..." --weight=2
 
 application_file="$final_path/app/data/_data_/_default_/configs/application.ini"
 ynh_replace_string --match_string="default_domain = .^" --replace_string="default_domain = \"$new_domain\"" --target_file="$application_file"
@@ -93,7 +93,7 @@ ynh_replace_string --match_string="$old_domain${old_path%/}" --replace_string="$
 #=================================================
 # RELOAD NGINX
 #=================================================
-ynh_script_progression --message="Reloading nginx web server..."
+ynh_script_progression --message="Reloading NGINX web server..."
 
 ynh_systemd_action --service_name=nginx --action=reload
 
