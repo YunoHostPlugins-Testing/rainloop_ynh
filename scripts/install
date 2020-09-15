@@ -86,6 +86,7 @@ ynh_script_progression --message="Configuring NGINX web server..."
 
 # Create a dedicated NGINX config
 ynh_add_nginx_config
+phpversion=$(ynh_app_setting_get --app=$app --key=phpversion)
 
 #=================================================
 # CREATE DEDICATED USER
@@ -136,7 +137,7 @@ timezone="$(date +%:::z)"
 ynh_replace_string --match_string="__TIME_ZONE__" --replace_string="${timezone//-/\\-}" --target_file="$application_file"
 
 # Set admin password
-php ../conf/config.php --index="$final_path/app/index.php" --password="$password"
+php"${phpversion]}" ../conf/config.php --index="$final_path/app/index.php" --password="$password"
 
 # Add default domain configs by looping through all the domains already added
 mkdir -p "$final_path/app/data/_data_/_default_/domains/"
