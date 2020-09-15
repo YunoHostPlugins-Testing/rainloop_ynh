@@ -55,6 +55,18 @@ if [ -z "$final_path" ]; then
 	ynh_app_setting_set --app=$app --key=final_path --value=$final_path
 fi
 
+case "$lang" in
+	Francais)
+		lang="fr"
+		ynh_app_setting_set --app=$app --key=lang --value=$lang
+		;;
+	English)
+		lang="en"
+		ynh_app_setting_set --app=$app --key=lang --value=$lang
+		;;
+	*)
+		;;
+esac
 #=================================================
 # BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
 #=================================================
