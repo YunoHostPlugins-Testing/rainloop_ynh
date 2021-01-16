@@ -12,7 +12,7 @@ Si vous n'avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) pour
 
 Rainloop est un webmail léger.
 
-**Version incluse:** 1.14.0
+**Version incluse:** 1.15.0
 
 ## Captures d'écran
 
