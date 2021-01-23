@@ -82,13 +82,6 @@ ynh_clean_setup () {
 ynh_abort_if_errors
 
 #=================================================
-# CHECK THE PATH
-#=================================================
-
-# Normalize the URL path syntax
-path_url=$(ynh_normalize_url_path --path_url=$path_url)
-
-#=================================================
 # STANDARD UPGRADE STEPS
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -180,9 +173,9 @@ find $final_path/. -type f -exec chmod 644 {} \;
 #=================================================
 # UPGRADE FAIL2BAN
 #=================================================
-ynh_script_progression --message="Reconfiguring Fail2ban..." --weight=9
+ynh_script_progression --message="Reconfiguring Fail2Ban..." --weight=9
 
-# Create a dedicated fail2ban config
+# Create a dedicated Fail2Ban config
 ynh_add_fail2ban_config --logpath="$final_path/app/data/_data_/_default_/logs/fail2ban/auth-fail.log" --failregex="Auth failed: ip=<HOST>.*$"
 
 #=================================================

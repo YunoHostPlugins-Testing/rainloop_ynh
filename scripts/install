@@ -191,9 +191,9 @@ chown -R $app: $final_path
 #=================================================
 # SETUP FAIL2BAN
 #=================================================
-ynh_script_progression --message="Configuring Fail2ban..." --weight=8
+ynh_script_progression --message="Configuring Fail2Ban..." --weight=8
 
-# Create a dedicated fail2ban config
+# Create a dedicated Fail2Ban config
 ynh_add_fail2ban_config --logpath="$final_path/app/data/_data_/_default_/logs/fail2ban/auth-fail.log" --failregex="Auth failed: ip=<HOST>.*$"
 
 #=================================================
@@ -206,7 +206,7 @@ if [ $is_public -eq 1 ]
 then
 	# Everyone can access the app.
 	# The "main" permission is automatically created before the install script.
-	 	ynh_permission_update --permission "main" --add "visitors"
+	ynh_permission_update --permission "main" --add "visitors"
 fi
 
 #=================================================

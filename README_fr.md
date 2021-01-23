@@ -1,7 +1,7 @@
 # Rainloop pour YunoHost
 
 [![Integration level](https://dash.yunohost.org/integration/rainloop.svg)](https://dash.yunohost.org/appci/app/rainloop) ![](https://ci-apps.yunohost.org/ci/badges/rainloop.status.svg) ![](https://ci-apps.yunohost.org/ci/badges/rainloop.maintain.svg)  
-[![Installer Rainloop avec YunoHost](https://install-app.yunohost.org/install-with-yunohost.png)](https://install-app.yunohost.org/?app=rainloop)
+[![Installer Rainloop avec YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=rainloop)
 
 *[Read this readme in english.](./README.md)* 
 
@@ -12,7 +12,7 @@ Si vous n'avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) pour
 
 Rainloop est un webmail léger.
 
-**Version incluse:** 1.14.0
+**Version incluse:** 1.15.0
 
 ## Captures d'écran
 
