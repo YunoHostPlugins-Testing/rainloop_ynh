@@ -40,7 +40,7 @@ Each user can add a remote carddav server from their own parameters interface.
 ## Documentation
 
  * Official documentation: https://www.rainloop.net/docs/configuration/
- * YunoHost documentation: https://yunohost.org/#/app_rainloop
+ * YunoHost documentation: https://yunohost.org/en/app_rainloop
 
 ## YunoHost specific features
 

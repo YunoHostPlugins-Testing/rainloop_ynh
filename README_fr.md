@@ -39,7 +39,7 @@ Chaque utilisateur peut ajouter un carnet d'adresse distant CardDav via leurs pr
 ## Documentation
 
  * Documentation officielle : https://www.rainloop.net/docs/configuration/
- * Documentation YunoHost : https://yunohost.org/#/app_rainloop_fr
+ * Documentation YunoHost : https://yunohost.org/fr/app_rainloop
 
 ## Caractéristiques spécifiques YunoHost
 
