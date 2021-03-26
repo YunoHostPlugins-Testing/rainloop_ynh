@@ -2,7 +2,7 @@
 
 // Enable RainLoop Api and include index file 
 $_ENV['RAINLOOP_INCLUDE_AS_API'] = true;
-include '__ALIASTOCHANGE__/app/index.php';
+include '__FINALPATH__/app/index.php';
 
 // Retrieve email and password
 if (isset($_SERVER['HTTP_EMAIL']) && isset($_SERVER['PHP_AUTH_PW'])) {
@@ -11,8 +11,8 @@ if (isset($_SERVER['HTTP_EMAIL']) && isset($_SERVER['PHP_AUTH_PW'])) {
 	$ssoHash = \RainLoop\Api::GetUserSsoHash($email, $password);
 
 	// redirect to webmail sso url
-	\header('Location: https://__DOMAIN____ROOTTOCHANGE__/app/index.php?sso&hash='.$ssoHash);
+	\header('Location: https://__DOMAIN____PATH__app/index.php?sso&hash='.$ssoHash);
 }
 else {
-	\header('Location: https://__DOMAIN____ROOTTOCHANGE__/app/index.php');
+	\header('Location: https://__DOMAIN____PATH__app/index.php');
 }

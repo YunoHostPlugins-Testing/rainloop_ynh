@@ -19,7 +19,7 @@ app=$YNH_APP_INSTANCE_NAME
 domain=$(ynh_app_setting_get --app=$app --key=domain)
 path_url=$(ynh_app_setting_get --app=$app --key=path)
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
-lang=$(ynh_app_setting_get --app=$app --key=lang)
+language=$(ynh_app_setting_get --app=$app --key=language)
 db_name=$(ynh_app_setting_get --app=$app --key=db_name)
 
 #=================================================
@@ -45,14 +45,14 @@ if [ -z "$final_path" ]; then
 	ynh_app_setting_set --app=$app --key=final_path --value=$final_path
 fi
 
-case "$lang" in
+case "$language" in
 	Francais)
 		lang="fr"
-		ynh_app_setting_set --app=$app --key=lang --value=$lang
+		ynh_app_setting_set --app=$app --key=language --value=$language
 		;;
 	English)
 		lang="en"
-		ynh_app_setting_set --app=$app --key=lang --value=$lang
+		ynh_app_setting_set --app=$app --key=language --value=$language
 		;;
 	*)
 		;;
@@ -138,10 +138,7 @@ timezone="$(date +%:::z)"
 ynh_replace_string --match_string="^time_offset = .*" --replace_string="time_offset = ${timezone//-/\\-}" --target_file="$final_path/app/data/_data_/_default_/configs/application.ini"
 
 # update SSO
-cp ../sources/sso/sso.php "$final_path/index.php"
-ynh_replace_string --match_string="__DOMAIN__" --replace_string="$domain" --target_file="$final_path/index.php"
-ynh_replace_string --match_string="__ALIASTOCHANGE__" --replace_string="$final_path" --target_file="$final_path/index.php"
-ynh_replace_string --match_string="__ROOTTOCHANGE__" --replace_string="${path_url%/}" --target_file="$final_path/index.php"
+ynh_add_config --template="../sources/sso/sso.php" --destination="$final_path/index.php"
 
 # Install PGPback by chtixof to allow users to backup/restore their PGP private keys on the server
 cp -rf ../sources/pgpback "$final_path/"

@@ -23,7 +23,7 @@ ynh_abort_if_errors
 domain=$YNH_APP_ARG_DOMAIN
 path_url=$YNH_APP_ARG_PATH
 is_public=$YNH_APP_ARG_IS_PUBLIC
-lang=$YNH_APP_ARG_LANG
+language=$YNH_APP_ARG_LANGUAGE
 password=$YNH_APP_ARG_PASSWORD
 ldap=$YNH_APP_ARG_LDAP
 
@@ -47,7 +47,7 @@ ynh_script_progression --message="Storing installation settings..."
 
 ynh_app_setting_set --app=$app --key=domain --value=$domain
 ynh_app_setting_set --app=$app --key=path --value=$path_url
-ynh_app_setting_set --app=$app --key=lang --value=$lang
+ynh_app_setting_set --app=$app --key=lang --value=$language
 ynh_app_setting_set --app=$app --key=password --value=$password
 ynh_app_setting_set --app=$app --key=ldap --value=$ldap
 
@@ -120,20 +120,11 @@ then
 fi
 ynh_app_setting_set --app=$app --key=plugins --value="$plugins"
 
-
 mkdir -p "$final_path/app/data/_data_/_default_/configs/"
 application_file="$final_path/app/data/_data_/_default_/configs/application.ini"
 
-cp ../conf/data/configs/application.ini "$application_file"
-ynh_replace_string --match_string="__DOMAIN__" --replace_string=$domain --target_file="$application_file"
-ynh_replace_string --match_string="__MYSQLUSER__" --replace_string=$db_name --target_file="$application_file"
-ynh_replace_string --match_string="__MYSQLPASSWORD__" --replace_string="$db_pwd" --target_file="$application_file"
-ynh_replace_string --match_string="__LANGTOCHANGE__" --replace_string=$lang --target_file="$application_file"
-ynh_replace_string --match_string="__PLUGINSTOENABLE__" --replace_string="$plugins" --target_file="$application_file"
-# FIXME Temporary fix for rainloop, waiting for https://github.com/YunoHost/yunohost/pull/752 to be released.
-# ynh_replace_string --match_string="__TIME_ZONE__" --replace_string="$(date +%:::z)" --target_file="$application_file"
 timezone="$(date +%:::z)"
-ynh_replace_string --match_string="__TIME_ZONE__" --replace_string="${timezone//-/\\-}" --target_file="$application_file"
+ynh_add_config --template="../conf/data/configs/application.ini" --destination="$application_file"
 
 # Set admin password
 php"${phpversion}" ../conf/config.php --index="$final_path/app/index.php" --password="$password"
@@ -150,10 +141,7 @@ cp ../conf/data/domains/default.ini "$final_path/app/data/_data_/_default_/domai
 
 
 # install SSO - at the moment the index is the SSO and rainloop is installed in /app
-cp ../sources/sso/sso.php "$final_path/index.php"
-ynh_replace_string --match_string="__DOMAIN__" --replace_string="$domain" --target_file="$final_path/index.php"
-ynh_replace_string --match_string="__ALIASTOCHANGE__" --replace_string="$final_path" --target_file="$final_path/index.php"
-ynh_replace_string --match_string="__ROOTTOCHANGE__" --replace_string="${path_url%/}" --target_file="$final_path/index.php"
+ynh_add_config --template="../sources/sso/sso.php" --destination="$final_path/index.php"
 
 # Install PGPback by chtixof to allow users to backup/restore their PGP private keys on the server
 cp -rf ../sources/pgpback "$final_path/"

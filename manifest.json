@@ -54,7 +54,7 @@
 				"default": true
 			},
 			{
-				"name": "lang",
+				"name": "language",
 				"type": "string",
 				"ask": {
 					"en": "Select default language",

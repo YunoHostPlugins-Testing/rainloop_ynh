@@ -2,11 +2,10 @@
 	; Manifest
         domain="domain.tld"    (DOMAIN)
         path="/rainloop"    (PATH)
-        lang="en"
+        language="en"
         is_public=1 (PUBLIC|public=1|private=0)
 	    password="pass"
         ldap=1
-
     ; Checks
         pkg_linter=1
         setup_sub_dir=1
@@ -25,4 +24,4 @@ Notification=none
 ;;; Upgrade options
 	; commit=7a48f5b9b35ff22529190f282bfcf5f56944741a
 		name=Upgrade to v.1.14.0
-		manifest_arg=domain=DOMAIN&path=PATH&is_public=Yes&password=password&ldap=Yes&lang=en&
+		manifest_arg=domain=DOMAIN&path=PATH&is_public=Yes&password=password&ldap=Yes&language=en&
