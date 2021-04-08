@@ -47,8 +47,8 @@ Chaque utilisateur peut ajouter un carnet d'adresse distant CardDav via leurs pr
 
 #### Supported architectures
 
-* x86-64 - [![Build Status](https://ci-apps.yunohost.org/ci/logs/rainloop%20%28Apps%29.svg)](https://ci-apps.yunohost.org/ci/apps/rainloop/)
-* ARMv8-A - [![Build Status](https://ci-apps-arm.yunohost.org/ci/logs/rainloop%20%28Apps%29.svg)](https://ci-apps-arm.yunohost.org/ci/apps/rainloop/)
+* x86-64 - [![Build Status](https://ci-apps.yunohost.org/ci/logs/rainloop.svg)](https://ci-apps.yunohost.org/ci/apps/rainloop/)
+* ARMv8-A - [![Build Status](https://ci-apps-arm.yunohost.org/ci/logs/rainloop.svg)](https://ci-apps-arm.yunohost.org/ci/apps/rainloop/)
 
 ## Limitations
 
