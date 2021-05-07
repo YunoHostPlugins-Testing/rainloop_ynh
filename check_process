@@ -2,11 +2,10 @@
 	; Manifest
         domain="domain.tld"    (DOMAIN)
         path="/rainloop"    (PATH)
-        lang="en"
+        language="en"
         is_public=1 (PUBLIC|public=1|private=0)
 	    password="pass"
         ldap=1
-
     ; Checks
         pkg_linter=1
         setup_sub_dir=1
@@ -15,15 +14,14 @@
         setup_private=1
         setup_public=1
         upgrade=1
-        upgrade=1	from_commit=e26b7e5823858ea5f526659f320692a2768786b5
+        upgrade=1	from_commit=7a48f5b9b35ff22529190f282bfcf5f56944741a
         backup_restore=1
         multi_instance=1
-        port_already_use=0
         change_url=1
 ;;; Options
 Email=
 Notification=none
 ;;; Upgrade options
-	; commit=e26b7e5823858ea5f526659f320692a2768786b5
-		name=Define ereg() if it does not exists 
-		manifest_arg=domain=DOMAIN&path=PATH&is_public=Yes&password=password&ldap=Yes&lang=en&
+	; commit=7a48f5b9b35ff22529190f282bfcf5f56944741a
+		name=Upgrade to v.1.14.0
+		manifest_arg=domain=DOMAIN&path=PATH&is_public=Yes&password=password&ldap=Yes&language=en&
