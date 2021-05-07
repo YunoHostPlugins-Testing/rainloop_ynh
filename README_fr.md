@@ -6,13 +6,13 @@
 *[Read this readme in english.](./README.md)* 
 
 > *Ce package vous permet d'installer Rainloop rapidement et simplement sur un serveur YunoHost.  
-Si vous n'avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) pour savoir comment l'installer et en profiter.*
+Si vous n'avez pas YunoHost, regardez [ici](https://yunohost.org/install) pour savoir comment l'installer et en profiter.*
 
 ## Vue d'ensemble
 
 Rainloop est un webmail léger.
 
-**Version incluse:** 1.15.0
+**Version incluse:** 1.16.0
 
 ## Captures d'écran
 
@@ -39,7 +39,7 @@ Chaque utilisateur peut ajouter un carnet d'adresse distant CardDav via leurs pr
 ## Documentation
 
  * Documentation officielle : https://www.rainloop.net/docs/configuration/
- * Documentation YunoHost : https://yunohost.org/#/app_rainloop_fr
+ * Documentation YunoHost : https://yunohost.org/fr/app_rainloop
 
 ## Caractéristiques spécifiques YunoHost
 
@@ -47,8 +47,8 @@ Chaque utilisateur peut ajouter un carnet d'adresse distant CardDav via leurs pr
 
 #### Supported architectures
 
-* x86-64 - [![Build Status](https://ci-apps.yunohost.org/ci/logs/rainloop%20%28Apps%29.svg)](https://ci-apps.yunohost.org/ci/apps/rainloop/)
-* ARMv8-A - [![Build Status](https://ci-apps-arm.yunohost.org/ci/logs/rainloop%20%28Apps%29.svg)](https://ci-apps-arm.yunohost.org/ci/apps/rainloop/)
+* x86-64 - [![Build Status](https://ci-apps.yunohost.org/ci/logs/rainloop.svg)](https://ci-apps.yunohost.org/ci/apps/rainloop/)
+* ARMv8-A - [![Build Status](https://ci-apps-arm.yunohost.org/ci/logs/rainloop.svg)](https://ci-apps-arm.yunohost.org/ci/apps/rainloop/)
 
 ## Limitations
 

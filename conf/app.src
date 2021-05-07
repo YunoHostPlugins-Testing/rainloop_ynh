@@ -1,5 +1,5 @@
-SOURCE_URL=https://github.com/RainLoop/rainloop-webmail/releases/download/v1.15.0/rainloop-community-1.15.0.zip
-SOURCE_SUM=cbfa285d015e923a32440a64be0085347e96ad40fe40758864bb2fcc26cdad5e
+SOURCE_URL=https://github.com/RainLoop/rainloop-webmail/releases/download/v1.16.0/rainloop-community-1.16.0.zip
+SOURCE_SUM=db949c4363b048a02eaa0f06a26a8386979b8734198c2939ee1e8cc54362ca67
 SOURCE_SUM_PRG=sha256sum
 SOURCE_FORMAT=zip
 SOURCE_IN_SUBDIR=false
