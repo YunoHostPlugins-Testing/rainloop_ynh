@@ -6,13 +6,13 @@
 *[Read this readme in english.](./README.md)* 
 
 > *Ce package vous permet d'installer Rainloop rapidement et simplement sur un serveur YunoHost.  
-Si vous n'avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) pour savoir comment l'installer et en profiter.*
+Si vous n'avez pas YunoHost, regardez [ici](https://yunohost.org/install) pour savoir comment l'installer et en profiter.*
 
 ## Vue d'ensemble
 
 Rainloop est un webmail léger.
 
-**Version incluse:** 1.15.0
+**Version incluse:** 1.16.0
 
 ## Captures d'écran
 
