@@ -168,7 +168,8 @@ ynh_use_logrotate --logfile=$final_path/app/data/_data_/_default_/logs/fail2ban/
 #=================================================
 
 # Set permissions on app files
-chown -R $app: $final_path
+chmod -R o-rwx $final_path
+chown -R $app:www-data $final_path
 find $final_path/. -type d -exec chmod 755 {} \;
 find $final_path/. -type f -exec chmod 644 {} \;
 
