@@ -31,7 +31,7 @@ upgrade_type=$(ynh_check_app_version_changed)
 #=================================================
 # ENSURE DOWNWARD COMPATIBILITY
 #=================================================
-ynh_script_progression --message="Ensuring downward compatibility..."
+ynh_script_progression --message="Ensuring downward compatibility..." --weight=1
 
 # If db_name doesn't exist, create it
 if [ -z "$db_name" ]; then
@@ -136,7 +136,7 @@ ynh_add_fpm_config
 #=================================================
 # UPDATE SSO AND PGP
 #=================================================
-ynh_script_progression --message="Upgrading Rainloop configuration..."
+ynh_script_progression --message="Upgrading Rainloop configuration..." --weight=2
 
 # Upgrade time_offset value for fail2ban
 # FIXME Temporary fix for rainloop, waiting for https://github.com/YunoHost/yunohost/pull/752 to be released.

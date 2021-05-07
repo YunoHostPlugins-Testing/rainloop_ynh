@@ -41,7 +41,7 @@ ynh_remove_app_dependencies
 #=================================================
 # REMOVE APP MAIN DIR
 #=================================================
-ynh_script_progression --message="Removing the app main directory..."
+ynh_script_progression --message="Removing the app main directory..." --weight=1
 
 # Remove the app directory securely
 ynh_secure_remove --file="$final_path"
@@ -49,7 +49,7 @@ ynh_secure_remove --file="$final_path"
 #=================================================
 # REMOVE NGINX CONFIGURATION
 #=================================================
-ynh_script_progression --message="Removing NGINX web server configuration..."
+ynh_script_progression --message="Removing NGINX web server configuration..." --weight=1
 
 # Remove the dedicated NGING config
 ynh_remove_nginx_config
@@ -65,7 +65,7 @@ ynh_remove_fpm_config
 #=================================================
 # REMOVE LOGROTATE CONFIGURATION
 #=================================================
-ynh_script_progression --message="Removing logrotate configuration..."
+ynh_script_progression --message="Removing logrotate configuration..." --weight=1
 
 # Remove the app-specific logrotate config
 ynh_remove_logrotate
@@ -83,7 +83,7 @@ ynh_remove_fail2ban_config
 #=================================================
 # REMOVE GPG KEY
 #=================================================
-ynh_script_progression --message="Removing GPG key"
+ynh_script_progression --message="Removing GPG key" --weight=1
 
 gpg --batch --delete-key --yes Rainloop
 
